@@ -1,4 +1,5 @@
 package EcommercePackage.user;
+import org.mindrot.jbcrypt.BCrypt;
 public abstract class User {
     private int user_id;
     private String username;
@@ -14,13 +15,13 @@ public abstract class User {
         this.user_id = id;
         this.username = username;
         this.email = email;
-        this.password = password;
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
         this.role = role;
     }
     public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
-        this.password = password;
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
     }
     public int getUser_id() {
         return user_id;
@@ -51,7 +52,7 @@ public abstract class User {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     public Role getRole(){
