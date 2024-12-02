@@ -1,9 +1,9 @@
 package EcommercePackage;
-
 import EcommercePackage.database.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 
 public class EcommerceApp {
 
