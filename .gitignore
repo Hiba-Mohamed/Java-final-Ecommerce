@@ -40,7 +40,7 @@ build/
 .DS_Store
 
 ### .env file ###
-.env
+src/main/resources/.env
 
 # Add other files you may not want to track (e.g., IDE configurations or system-specific files)
 *.log
