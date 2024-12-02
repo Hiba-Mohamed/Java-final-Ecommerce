@@ -1,16 +1,27 @@
 package EcommercePackage;
 import EcommercePackage.database.DatabaseConnection;
+import EcommercePackage.user.UserDAO;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.ResultSet;
 
 
 public class EcommerceApp {
+    private static UserDAO userDAO = new UserDAO();
+
 
     public static void main(String[] args) {
         // Call the method to create tables
         createSQLtables();
-    }
+        insertTestData();
+        try {
+            // Call getAllUsers using the static userDAO instance
+            userDAO.getAllUsers();
+        } catch (SQLException e) {
+            System.out.println("Error fetching users: " + e.getMessage());
+        }    }
 
     public static void createSQLtables() {
         try (Connection connection = connectToDataBase()) {
@@ -28,6 +39,67 @@ public class EcommerceApp {
 
     public static Connection connectToDataBase() throws SQLException {
         return DatabaseConnection.getConnection();
+    }
+
+
+    private static void insertTestData() {
+        String checkDataSql = "SELECT COUNT(*) AS user_count FROM users;";
+        String insertRolesSql =
+                "INSERT INTO roles (role) VALUES ('ADMIN'), ('SELLER'), ('BUYER');";
+
+        try (Connection connection = connectToDataBase();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(checkDataSql)) {
+
+            if (resultSet.next() && resultSet.getInt("user_count") > 0) {
+                System.out.println("Sample data already exists. Skipping insertion.");
+            } else {
+                // Insert roles first
+                statement.execute(insertRolesSql);
+
+                // Insert users with hashed passwords and role IDs
+                String insertUsersSql = generateInsertUsersSql();
+                statement.execute(insertUsersSql);
+
+                System.out.println("Sample data inserted successfully.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while inserting sample data: " + e.getMessage());
+        }
+    }
+
+    private static String generateInsertUsersSql() {
+        String[][] sampleUsers = {
+                {"john_doe", "john@example.com", "secret123", "1"}, // 1 = ADMIN
+                {"jane_doe", "jane@example.com", "password456", "3"}, // 3 = BUYER
+                {"mark_smith", "mark@example.com", "markspassword", "2"}, // 2 = SELLER
+                {"emma_brown", "emma@example.com", "emmapassword", "3"},
+                {"lucas_white", "lucas@example.com", "lucaspassword", "2"},
+                {"mia_black", "mia@example.com", "miapassword", "1"},
+                {"olivia_green", "olivia@example.com", "oliviapassword", "2"},
+                {"liam_blue", "liam@example.com", "liampassword", "3"},
+                {"sophia_grey", "sophia@example.com", "sophiapassword", "2"},
+                {"noah_purple", "noah@example.com", "noahpassword", "1"}
+        };
+
+        StringBuilder sqlBuilder = new StringBuilder("INSERT INTO users (username, email, password, role_id) VALUES ");
+        for (int i = 0; i < sampleUsers.length; i++) {
+            String username = sampleUsers[i][0];
+            String email = sampleUsers[i][1];
+            String passwordHash = org.mindrot.jbcrypt.BCrypt.hashpw(sampleUsers[i][2], org.mindrot.jbcrypt.BCrypt.gensalt());
+            String roleId = sampleUsers[i][3];
+
+            sqlBuilder.append(String.format("('%s', '%s', '%s', %s)", username, email, passwordHash, roleId));
+
+            // Add a comma unless it's the last entry
+            if (i < sampleUsers.length - 1) {
+                sqlBuilder.append(", ");
+            } else {
+                sqlBuilder.append(";");
+            }
+        }
+
+        return sqlBuilder.toString();
     }
 
     private static void executeSqlQueries(Connection connection) {
