@@ -1,5 +1,7 @@
 package EcommercePackage;
 import EcommercePackage.database.DatabaseConnection;
+import EcommercePackage.user.UserDAO;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -7,12 +9,19 @@ import java.sql.ResultSet;
 
 
 public class EcommerceApp {
+    private static UserDAO userDAO = new UserDAO();
+
 
     public static void main(String[] args) {
         // Call the method to create tables
         createSQLtables();
         insertTestData();
-    }
+        try {
+            // Call getAllUsers using the static userDAO instance
+            userDAO.getAllUsers();
+        } catch (SQLException e) {
+            System.out.println("Error fetching users: " + e.getMessage());
+        }    }
 
     public static void createSQLtables() {
         try (Connection connection = connectToDataBase()) {
