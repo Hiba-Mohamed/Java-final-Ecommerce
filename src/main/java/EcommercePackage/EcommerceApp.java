@@ -29,6 +29,7 @@ public class EcommerceApp {
             addPredefinedUsers();
             removeUser();
             updateUserPassword();
+            updateUserRole();
             System.out.println("All database operations completed successfully.");
         } catch (SQLException e) {
             // Handle any SQL exceptions that occur during any of the operations
@@ -190,5 +191,9 @@ public class EcommerceApp {
             System.out.println("Error while getting all users: " + e.getMessage());
 
         }
+    }
+
+    private static void updateUserRole(){
+        userDAO.changeUserRole("admin1", 2);
     }
 }

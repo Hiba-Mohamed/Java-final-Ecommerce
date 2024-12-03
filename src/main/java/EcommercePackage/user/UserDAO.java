@@ -150,4 +150,33 @@ public class UserDAO{
         }
     }
 
+    public void changeUserRole(String username, int newRoleId) {
+        if (newRoleId < 1 || newRoleId > 3) {
+            System.out.println("Invalid role ID. 1 for 'ADMIN', 2 for 'SELLER', and 3 for 'BUYER'");
+            return;
+        }
+
+        String updateRoleSql = "UPDATE users SET role_id = ? WHERE username = ?";
+
+        try (Connection connection = connectToDataBase();
+             PreparedStatement statement = connection.prepareStatement(updateRoleSql)) {
+
+            statement.setInt(1, newRoleId);
+            statement.setString(2, username);
+
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("------------------------------------");
+                System.out.println("|  User role updated successfully.  |");
+                System.out.println("------------------------------------");
+            } else {
+                System.out.println("------------------------------------------------------");
+                System.out.println("|  No user found with the username: " + username);
+                System.out.println("------------------------------------------------------");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while changing user role: " + e.getMessage());
+        }
+    }
 }
