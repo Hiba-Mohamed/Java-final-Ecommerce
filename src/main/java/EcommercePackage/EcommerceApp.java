@@ -15,18 +15,27 @@ public class EcommerceApp {
     private static final UserDAO userDAO = new UserDAO();
 
     public static void main(String[] args) {
-        // Call the method to create tables
-        createSQLtables();
-        insertTestData();
-        addPredefinedUsers();
-        try {
-            // Call getAllUsers using the static userDAO instance
-            userDAO.getAllUsers();
-        } catch (SQLException e) {
-            System.out.println("Error fetching users: " + e.getMessage());
-        }    }
+        EcommerceApp app = new EcommerceApp();
+        app.executeDatabaseOperations();
+    };
 
-    public static void createSQLtables() {
+
+
+    public void executeDatabaseOperations() {
+        try {
+            displayAllUsers();
+            createSQLtables();
+            insertTestData();
+            addPredefinedUsers();
+            removeUser();
+            updateUserPassword();
+            System.out.println("All database operations completed successfully.");
+        } catch (SQLException e) {
+            // Handle any SQL exceptions that occur during any of the operations
+            System.out.println("Error during database operations: " + e.getMessage());
+        }
+    }
+    public static void createSQLtables() throws SQLException {
         try (Connection connection = connectToDataBase()) {
             if (connection != null) {
                 System.out.println("Connected to the database successfully!");
@@ -45,7 +54,7 @@ public class EcommerceApp {
     }
 
 
-    private static void insertTestData() {
+    private static void insertTestData() throws SQLException{
         String checkDataSql = "SELECT COUNT(*) AS user_count FROM users;";
         String insertRolesSql =
                 "INSERT INTO roles (role) VALUES ('ADMIN'), ('SELLER'), ('BUYER');";
@@ -71,7 +80,7 @@ public class EcommerceApp {
         }
     }
 
-    private static String generateInsertUsersSql() {
+    private static String generateInsertUsersSql() throws SQLException{
         String[][] sampleUsers = {
                 {"john_doe", "john@example.com", "secret123", "1"}, // 1 = ADMIN
                 {"jane_doe", "jane@example.com", "password456", "3"}, // 3 = BUYER
@@ -105,16 +114,16 @@ public class EcommerceApp {
         return sqlBuilder.toString();
     }
 
-    private static void executeSqlQueries(Connection connection) {
+    private static void executeSqlQueries(Connection connection) throws SQLException{
         // Define the SQL queries as a string
         String sql =
                 "CREATE TABLE IF NOT EXISTS roles (" +
                         "    id SERIAL PRIMARY KEY," +
-                        "    role TEXT NOT NULL" +
+                        "    role TEXT NOT NULL UNIQUE" +
                         ");" +
                         "CREATE TABLE IF NOT EXISTS users (" +
                         "    user_id SERIAL PRIMARY KEY," +
-                        "    username VARCHAR(50) NOT NULL," +
+                        "    username VARCHAR(50) NOT NULL UNIQUE," +
                         "    email VARCHAR(100) NOT NULL UNIQUE," +
                         "    password TEXT NOT NULL," +
                         "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
@@ -145,7 +154,7 @@ public class EcommerceApp {
         }
     }
 
-    private static void addPredefinedUsers() {
+    private static void addPredefinedUsers() throws SQLException {
         // Create user instances
         User adminUser = new Admin("admin1", "admin@example.com", "adminpass");
         User sellerUser = new Seller("seller1", "seller@example.com", "sellerpass");
@@ -158,6 +167,28 @@ public class EcommerceApp {
             userDAO.addUser(buyerUser);
         } catch (SQLException e) {
             System.out.println("Error while adding predefined users: " + e.getMessage());
+        }
+    }
+
+    private static void removeUser() throws SQLException{
+        try {
+            userDAO.removeUser("buyer1");
+        } catch (SQLException e) {
+            System.out.println("Error while adding predefined users: " + e.getMessage());
+        }
+    }
+
+    private static void updateUserPassword(){
+        userDAO.updateUserPassword("admin1", "adminpass", "NewAdminPass" );
+    }
+
+    private static void displayAllUsers() throws SQLException {
+        try{
+            userDAO.getAllUsers();
+        }
+        catch (SQLException e){
+            System.out.println("Error while getting all users: " + e.getMessage());
+
         }
     }
 }

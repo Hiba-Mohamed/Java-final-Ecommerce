@@ -1,5 +1,6 @@
 package EcommercePackage.user;
 import EcommercePackage.database.DatabaseConnection;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 
@@ -42,8 +43,6 @@ public class UserDAO{
 
     }
 
-
-
     public void addUser(User user) throws SQLException {
         String sql = "INSERT INTO users (username, email, password, role_id) VALUES (?, ?, ?, ?)";
 
@@ -60,17 +59,95 @@ public class UserDAO{
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("User added successfully!");
+                System.out.println("----------------------------");
+                System.out.println("| User added successfully! |");
+                System.out.println("----------------------------");
+
             } else {
-                System.out.println("User insertion failed.");
+                System.out.println("--------------------------");
+                System.out.println("| User insertion failed. |");
+                System.out.println("--------------------------");
+
             }
         } catch (SQLException e) {
             System.out.println("Error while adding user: " + e.getMessage());
         }
     }
 
-    public void removeUser(User user)  throws SQLException{
+    public void removeUser(String username) throws SQLException {
+        String sql = "DELETE FROM users WHERE username = ?";
 
+        try (Connection connection = connectToDataBase();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+            // Set the username parameter
+            pstmt.setString(1, username);
+
+            // Execute the query to delete the user
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("---------------------------------------------------");
+                System.out.println("|  User '" + username + "' removed successfully.  |");
+                System.out.println("---------------------------------------------------");
+            } else {
+                System.out.println("--------------------------------------------------------");
+                System.out.println("|  No user found with the username '" + username + "'.  |");
+                System.out.println("--------------------------------------------------------");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while removing user: " + e.getMessage());
+        }
+    }
+
+    public void updateUserPassword(String username, String oldPassword, String newPassword) {
+        String selectSql = "SELECT password FROM users WHERE username = ?";
+        String updateSql = "UPDATE users SET password = ? WHERE username = ?";
+
+        try (Connection connection = connectToDataBase();
+             PreparedStatement selectStmt = connection.prepareStatement(selectSql);
+             PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
+
+            // Retrieve the current hashed password
+            selectStmt.setString(1, username);
+            ResultSet rs = selectStmt.executeQuery();
+
+            if (rs.next()) {
+                String currentHashedPassword = rs.getString("password");
+
+                // Compare the provided oldPassword with the hashed password
+                if (!BCrypt.checkpw(oldPassword, currentHashedPassword)) {
+                    System.out.println("------------------------------------");
+                    System.out.println("| Old password is incorrect.       |");
+                    System.out.println("------------------------------------");
+                    return;
+                }
+
+                // Hash the new password
+                String newHashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+
+                // Update the password
+                updateStmt.setString(1, newHashedPassword);
+                updateStmt.setString(2, username);
+                int rowsAffected = updateStmt.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("------------------------------------");
+                    System.out.println("| Password updated successfully!   |");
+                    System.out.println("------------------------------------");
+                } else {
+                    System.out.println("------------------------------------");
+                    System.out.println("| Password update failed.          |");
+                    System.out.println("------------------------------------");
+                }
+            } else {
+                System.out.println("------------------------------------");
+                System.out.println("| Username not found.              |");
+                System.out.println("------------------------------------");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while updating password: " + e.getMessage());
+        }
     }
 
 }

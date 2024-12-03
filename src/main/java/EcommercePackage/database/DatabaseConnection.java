@@ -10,7 +10,7 @@ public class DatabaseConnection {
         Dotenv dotenv = Dotenv.configure()
                 .directory("src/main/resources")
                 .load();
-        System.out.println(dotenv);
+//        System.out.println(dotenv);
         // Get the environment variables
         String url = dotenv.get("DB_URL");
         String user = dotenv.get("DB_USER");
