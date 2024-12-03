@@ -2,16 +2,16 @@ package EcommercePackage.productmanagement;
 
 public class Product {
   // Attributes
-    private int id;
-    private String name;
+    private int product_id;
+    private String product_name;
     private double price;
     private int quantity;
     private int sellerId;
 
     // Constructor
-    public Product(int id, String name, double price, int quantity, int sellerId) {
-        this.id = id;
-        this.name = name;
+    public Product(int product_id, String product_name, double price, int quantity, int sellerId) {
+        this.product_id = product_id;
+        this.product_name = product_name;
         this.price = price;
         this.quantity = quantity;
         this.sellerId = sellerId;
@@ -19,19 +19,19 @@ public class Product {
 
     // Getters and Setters
     public int getId() {
-        return this.id;
+        return this.product_id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(int product_id) {
+        this.product_id = product_id;
     }
 
     public String getName() {
-        return this.name;
+        return this.product_name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String product_name) {
+        this.product_name = product_name;
     }
 
     public double getPrice() {
@@ -65,7 +65,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product [ID=" + this.id + ", Name=" + this.name + ", Price=" + this.price +
+        return "Product [ID=" + this.product_id + ", Name=" + this.product_name + ", Price=" + this.price +
                ", Quantity=" + this.quantity + ", Seller ID=" + this.sellerId + "]";
     }
 }
