@@ -1,7 +1,10 @@
 package EcommercePackage;
 import EcommercePackage.database.DatabaseConnection;
+import EcommercePackage.user.Buyer;
+import EcommercePackage.user.Admin;
+import EcommercePackage.user.Seller;
+import EcommercePackage.user.User;
 import EcommercePackage.user.UserDAO;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,13 +12,13 @@ import java.sql.ResultSet;
 
 
 public class EcommerceApp {
-    private static UserDAO userDAO = new UserDAO();
-
+    private static final UserDAO userDAO = new UserDAO();
 
     public static void main(String[] args) {
         // Call the method to create tables
         createSQLtables();
         insertTestData();
+        addPredefinedUsers();
         try {
             // Call getAllUsers using the static userDAO instance
             userDAO.getAllUsers();
@@ -139,6 +142,22 @@ public class EcommerceApp {
             System.out.println("SQL queries executed successfully.");
         } catch (SQLException e) {
             System.out.println("Error while executing SQL queries: " + e.getMessage());
+        }
+    }
+
+    private static void addPredefinedUsers() {
+        // Create user instances
+        User adminUser = new Admin("admin1", "admin@example.com", "adminpass");
+        User sellerUser = new Seller("seller1", "seller@example.com", "sellerpass");
+        User buyerUser = new Buyer("buyer1", "buyer@example.com", "buyerpass");
+
+        // Add users to the database
+        try {
+            userDAO.addUser(adminUser);
+            userDAO.addUser(sellerUser);
+            userDAO.addUser(buyerUser);
+        } catch (SQLException e) {
+            System.out.println("Error while adding predefined users: " + e.getMessage());
         }
     }
 }

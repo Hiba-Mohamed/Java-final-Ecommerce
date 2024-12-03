@@ -4,6 +4,9 @@ import EcommercePackage.database.DatabaseConnection;
 import java.sql.*;
 
 public class UserDAO{
+//1 "ADMIN"
+//2	"SELLER"
+//3	"BUYER"
     public static Connection connectToDataBase() throws SQLException {
         return DatabaseConnection.getConnection();
     }
@@ -36,6 +39,37 @@ public class UserDAO{
         } catch (SQLException e) {
             System.out.println("Error while fetching users: " + e.getMessage());
         }
+
+    }
+
+
+
+    public void addUser(User user) throws SQLException {
+        String sql = "INSERT INTO users (username, email, password, role_id) VALUES (?, ?, ?, ?)";
+
+        try (Connection connection = connectToDataBase();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+            // Set parameters for the prepared statement
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getEmail());
+            pstmt.setString(3, user.getPassword());
+            pstmt.setInt(4, user.getRoleId());
+
+            // Execute the query to insert the user
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("User added successfully!");
+            } else {
+                System.out.println("User insertion failed.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while adding user: " + e.getMessage());
+        }
+    }
+
+    public void removeUser(User user)  throws SQLException{
 
     }
 
