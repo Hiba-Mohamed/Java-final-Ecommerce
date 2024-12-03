@@ -42,8 +42,6 @@ public class UserDAO{
 
     }
 
-
-
     public void addUser(User user) throws SQLException {
         String sql = "INSERT INTO users (username, email, password, role_id) VALUES (?, ?, ?, ?)";
 
@@ -60,17 +58,45 @@ public class UserDAO{
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("User added successfully!");
+                System.out.println("----------------------------");
+                System.out.println("| User added successfully! |");
+                System.out.println("----------------------------");
+
             } else {
-                System.out.println("User insertion failed.");
+                System.out.println("--------------------------");
+                System.out.println("| User insertion failed. |");
+                System.out.println("--------------------------");
+
             }
         } catch (SQLException e) {
             System.out.println("Error while adding user: " + e.getMessage());
         }
     }
 
-    public void removeUser(User user)  throws SQLException{
+    public void removeUser(String username) throws SQLException {
+        String sql = "DELETE FROM users WHERE username = ?";
 
+        try (Connection connection = connectToDataBase();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+            // Set the username parameter
+            pstmt.setString(1, username);
+
+            // Execute the query to delete the user
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("---------------------------------------------------");
+                System.out.println("|  User '" + username + "' removed successfully.  |");
+                System.out.println("---------------------------------------------------");
+            } else {
+                System.out.println("--------------------------------------------------------");
+                System.out.println("|  No user found with the username '" + username + "'.  |");
+                System.out.println("--------------------------------------------------------");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while removing user: " + e.getMessage());
+        }
     }
 
 }

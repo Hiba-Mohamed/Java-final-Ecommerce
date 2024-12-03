@@ -19,6 +19,8 @@ public class EcommerceApp {
         createSQLtables();
         insertTestData();
         addPredefinedUsers();
+        removeUser();
+
         try {
             // Call getAllUsers using the static userDAO instance
             userDAO.getAllUsers();
@@ -110,11 +112,11 @@ public class EcommerceApp {
         String sql =
                 "CREATE TABLE IF NOT EXISTS roles (" +
                         "    id SERIAL PRIMARY KEY," +
-                        "    role TEXT NOT NULL" +
+                        "    role TEXT NOT NULL UNIQUE" +
                         ");" +
                         "CREATE TABLE IF NOT EXISTS users (" +
                         "    user_id SERIAL PRIMARY KEY," +
-                        "    username VARCHAR(50) NOT NULL," +
+                        "    username VARCHAR(50) NOT NULL UNIQUE," +
                         "    email VARCHAR(100) NOT NULL UNIQUE," +
                         "    password TEXT NOT NULL," +
                         "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
@@ -156,6 +158,14 @@ public class EcommerceApp {
             userDAO.addUser(adminUser);
             userDAO.addUser(sellerUser);
             userDAO.addUser(buyerUser);
+        } catch (SQLException e) {
+            System.out.println("Error while adding predefined users: " + e.getMessage());
+        }
+    }
+
+    private static void removeUser(){
+        try {
+            userDAO.removeUser("buyer1");
         } catch (SQLException e) {
             System.out.println("Error while adding predefined users: " + e.getMessage());
         }

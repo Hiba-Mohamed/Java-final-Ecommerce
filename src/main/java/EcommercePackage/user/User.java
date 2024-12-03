@@ -9,7 +9,6 @@ public abstract class User {
     private int role_id;
 
 
-
     public User(int id, String username, String email, String password, String role, int role_id){
         this.user_id = id;
         this.username = username;
