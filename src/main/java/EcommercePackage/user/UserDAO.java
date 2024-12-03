@@ -100,7 +100,7 @@ public class UserDAO{
         }
     }
 
-    public void updateUserPassword(String username, String oldPassword, String newPassword) {
+    public void updateUserPassword(String username, String oldPassword, String newPassword)  throws SQLException{
         String selectSql = "SELECT password FROM users WHERE username = ?";
         String updateSql = "UPDATE users SET password = ? WHERE username = ?";
 
@@ -150,7 +150,7 @@ public class UserDAO{
         }
     }
 
-    public void changeUserRole(String username, int newRoleId) {
+    public void changeUserRole(String username, int newRoleId) throws SQLException{
         if (newRoleId < 1 || newRoleId > 3) {
             System.out.println("Invalid role ID. 1 for 'ADMIN', 2 for 'SELLER', and 3 for 'BUYER'");
             return;
@@ -179,4 +179,30 @@ public class UserDAO{
             System.out.println("Error while changing user role: " + e.getMessage());
         }
     }
-}
+
+    public void updateUserEmail(String username, String newEmail) throws SQLException {
+        String updateRoleSql = "UPDATE users SET email = ? WHERE username = ?";
+
+        try (Connection connection = connectToDataBase();
+             PreparedStatement statement = connection.prepareStatement(updateRoleSql)) {
+
+            statement.setString(1, newEmail);
+            statement.setString(2, username);
+
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("-------------------------------------");
+                System.out.println("|  User Email updated successfully.  |");
+                System.out.println("-------------------------------------");
+            } else {
+                System.out.println("------------------------------------------------------");
+                System.out.println("|  No user found with the username: " + username);
+                System.out.println("------------------------------------------------------");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while changing user email: " + e.getMessage());
+        }
+    }
+
+    }
