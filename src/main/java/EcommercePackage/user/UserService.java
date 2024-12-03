@@ -8,6 +8,15 @@ public class UserService {
         userDAO = new UserDAO();
     }
 
+    public int login(String username, String password) {
+        try {
+            return userDAO.login(username, password);
+        } catch (SQLException e) {
+            System.out.println("Error login: " + e.getMessage());
+            return 0; // Return 0 for failed login
+        }
+    }
+
     public void getAllUsers() {
         try {
             userDAO.getAllUsers();
@@ -93,5 +102,35 @@ public class UserService {
             return false;
         }
     }
+
+    public int getRoleIdByUsername(String username){
+        if (username == null){
+            System.out.println("Error: username is required !");
+            return 0;
+        }
+        try {
+            int roleId = userDAO.getRoleIdByUsername(username);
+            if (roleId != -1) {
+                System.out.println("User roleId retrieved successfully: " + roleId);
+            }
+            return roleId;
+        } catch (SQLException e) {
+            System.out.println("Error updating user password: " + e.getMessage());
+            return 0;
+        }
+    }
+
+    public boolean executeUserDatabaseSetUpOperations(){
+        try {
+            userDAO.executeUserDatabaseSetUpOperations();
+            System.out.println("Sample data loaded successfully!");
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Error loading sample data : " + e.getMessage());
+            return false;
+        }
+    }
+
+
 
 }
