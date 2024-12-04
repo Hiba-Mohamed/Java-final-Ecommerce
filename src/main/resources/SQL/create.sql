@@ -15,10 +15,10 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS products (
     product_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    quantity INT NOT NULL,
-    seller_id INT,
+    productName VARCHAR(100) NOT NULL,
+    productPrice DECIMAL(10, 2) NOT NULL,
+    productQuantity INT NOT NULL,
+    productSellerId INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (seller_id) REFERENCES users(user_id)
 );
