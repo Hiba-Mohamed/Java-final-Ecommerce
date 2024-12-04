@@ -1,6 +1,8 @@
 package EcommercePackage.user;
 import java.sql.SQLException;
 
+import EcommercePackage.SQL;
+
 public class UserService {
     private final UserDAO userDAO;
 
@@ -72,8 +74,8 @@ public class UserService {
         }
     }
 
-    public boolean changeUserRole(String username, int newRoleId){
-        if (username == null || newRoleId <1 || newRoleId >3){
+    public boolean changeUserRole(String username, int newRoleId) {
+        if (username == null || newRoleId < 1 || newRoleId > 3) {
             System.out.println("Error: username is required and role_id must be between 1 and 3 !");
             return false;
         }
@@ -87,9 +89,8 @@ public class UserService {
         }
     }
 
-
-    public boolean updateUserEmail(String username, String newEmail){
-        if (username == null || newEmail == null){
+    public boolean updateUserEmail(String username, String newEmail) {
+        if (username == null || newEmail == null) {
             System.out.println("Error: username and email are required !");
             return false;
         }
@@ -103,8 +104,8 @@ public class UserService {
         }
     }
 
-    public int getRoleIdByUsername(String username){
-        if (username == null){
+    public int getRoleIdByUsername(String username) {
+        if (username == null) {
             System.out.println("Error: username is required !");
             return 0;
         }
@@ -120,17 +121,26 @@ public class UserService {
         }
     }
 
-    public boolean executeUserDatabaseSetUpOperations(){
+    // public boolean executeUserDatabaseSetUpOperations(){
+    //     try {
+    //         userDAO.executeUserDatabaseSetUpOperations();
+    //         System.out.println("Sample data loaded successfully!");
+    //         return true;
+    //     } catch (SQLException e) {
+    //         System.out.println("Error loading sample data : " + e.getMessage());
+    //         return false;
+    //     }
+    // }
+
+    public boolean executeUserDatabaseSetUpOperations() {
         try {
-            userDAO.executeUserDatabaseSetUpOperations();
+            SQL.executeUserDatabaseSetUpOperations(); 
             System.out.println("Sample data loaded successfully!");
             return true;
         } catch (SQLException e) {
-            System.out.println("Error loading sample data : " + e.getMessage());
+            System.out.println("Error loading sample data: " + e.getMessage());
             return false;
         }
     }
-
-
 
 }
