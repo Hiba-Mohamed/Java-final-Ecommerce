@@ -1,14 +1,15 @@
 package EcommercePackage;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import EcommercePackage.database.DatabaseConnection;
-import EcommercePackage.user.Buyer;
 import EcommercePackage.user.Admin;
+import EcommercePackage.user.Buyer;
 import EcommercePackage.user.Seller;
 import EcommercePackage.user.User;
 import EcommercePackage.user.UserDAO;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.ResultSet;
 
 
 public class EcommerceApp {
@@ -58,6 +59,7 @@ public class EcommerceApp {
         String checkDataSql = "SELECT COUNT(*) AS user_count FROM users;";
         String insertRolesSql =
                 "INSERT INTO roles (role) VALUES ('ADMIN'), ('SELLER'), ('BUYER');";
+        String checkProductDataSql = "SELECT COUNT(*) AS product_count FROM products;";
 
         try (Connection connection = connectToDataBase();
              Statement statement = connection.createStatement();
@@ -75,36 +77,83 @@ public class EcommerceApp {
 
                 System.out.println("Sample data inserted successfully.");
             }
+
+        // Check product data using a new ResultSet
+        try (ResultSet productResultSet = statement.executeQuery(checkProductDataSql)) {
+            if (productResultSet.next() && productResultSet.getInt("product_count") > 0) {
+                System.out.println("Sample product data already exists. Skipping insertion.");
+            } else {
+                String insertProductsSql = generateInsertProductsSql();
+                statement.execute(insertProductsSql);
+                System.out.println("Sample product data inserted successfully.");
+            }
+        }
+
         } catch (SQLException e) {
             System.out.println("Error while inserting sample data: " + e.getMessage());
         }
     }
 
-    private static String generateInsertUsersSql() throws SQLException{
+    private static String generateInsertUsersSql() throws SQLException {
         String[][] sampleUsers = {
-                {"john_doe", "john@example.com", "secret123", "1"}, // 1 = ADMIN
-                {"jane_doe", "jane@example.com", "password456", "3"}, // 3 = BUYER
-                {"mark_smith", "mark@example.com", "markspassword", "2"}, // 2 = SELLER
-                {"emma_brown", "emma@example.com", "emmapassword", "3"},
-                {"lucas_white", "lucas@example.com", "lucaspassword", "2"},
-                {"mia_black", "mia@example.com", "miapassword", "1"},
-                {"olivia_green", "olivia@example.com", "oliviapassword", "2"},
-                {"liam_blue", "liam@example.com", "liampassword", "3"},
-                {"sophia_grey", "sophia@example.com", "sophiapassword", "2"},
-                {"noah_purple", "noah@example.com", "noahpassword", "1"}
+                { "john_doe", "john@example.com", "secret123", "1" }, // 1 = ADMIN
+                { "jane_doe", "jane@example.com", "password456", "3" }, // 3 = BUYER
+                { "mark_smith", "mark@example.com", "markspassword", "2" }, // 2 = SELLER
+                { "emma_brown", "emma@example.com", "emmapassword", "3" },
+                { "lucas_white", "lucas@example.com", "lucaspassword", "2" },
+                { "mia_black", "mia@example.com", "miapassword", "1" },
+                { "olivia_green", "olivia@example.com", "oliviapassword", "2" },
+                { "liam_blue", "liam@example.com", "liampassword", "3" },
+                { "sophia_grey", "sophia@example.com", "sophiapassword", "2" },
+                { "noah_purple", "noah@example.com", "noahpassword", "1" }
         };
 
         StringBuilder sqlBuilder = new StringBuilder("INSERT INTO users (username, email, password, role_id) VALUES ");
         for (int i = 0; i < sampleUsers.length; i++) {
             String username = sampleUsers[i][0];
             String email = sampleUsers[i][1];
-            String passwordHash = org.mindrot.jbcrypt.BCrypt.hashpw(sampleUsers[i][2], org.mindrot.jbcrypt.BCrypt.gensalt());
+            String passwordHash = org.mindrot.jbcrypt.BCrypt.hashpw(sampleUsers[i][2],
+                    org.mindrot.jbcrypt.BCrypt.gensalt());
             String roleId = sampleUsers[i][3];
 
             sqlBuilder.append(String.format("('%s', '%s', '%s', %s)", username, email, passwordHash, roleId));
 
             // Add a comma unless it's the last entry
             if (i < sampleUsers.length - 1) {
+                sqlBuilder.append(", ");
+            } else {
+                sqlBuilder.append(";");
+            }
+        }
+
+        return sqlBuilder.toString();
+    }
+    
+    private static String generateInsertProductsSql() {
+    String[][] sampleProducts = {
+            {"Apple iPhone 14", "999.99", "100", "2"},  // seller_id = 2 (SELLER)
+            {"Samsung Galaxy S21", "799.99", "150", "2"},
+            {"Sony WH-1000XM4", "349.99", "200", "2"},
+            {"Apple MacBook Air", "1299.99", "50", "2"},
+            {"Dell XPS 13", "1099.99", "75", "2"},
+            {"Bose SoundLink Speaker", "249.99", "120", "2"},
+            {"HP Spectre x360", "1399.99", "40", "2"},
+            {"Google Pixel 7", "599.99", "100", "2"},
+            {"Canon EOS R10", "1099.00", "30", "2"},
+            {"Microsoft Surface Pro 9", "999.00", "60", "2"}
+        };
+
+        StringBuilder sqlBuilder = new StringBuilder("INSERT INTO products (name, price, quantity, seller_id) VALUES ");
+        for (int i = 0; i < sampleProducts.length; i++) {
+            String name = sampleProducts[i][0];
+            String price = sampleProducts[i][1];
+            String quantity = sampleProducts[i][2];
+            String sellerId = sampleProducts[i][3];
+
+            sqlBuilder.append(String.format("('%s', %s, %s, %s)", name, price, quantity, sellerId));
+
+            // Add a comma unless it's the last entry
+            if (i < sampleProducts.length - 1) {
                 sqlBuilder.append(", ");
             } else {
                 sqlBuilder.append(";");
