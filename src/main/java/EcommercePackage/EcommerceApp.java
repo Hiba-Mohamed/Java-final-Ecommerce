@@ -1,10 +1,9 @@
 package EcommercePackage;
+import java.util.Scanner;
+
 import EcommercePackage.user.Buyer;
-import EcommercePackage.user.Seller;
 import EcommercePackage.user.User;
 import EcommercePackage.user.UserService;
-
-import java.util.Scanner;
 
 public class EcommerceApp {
 
