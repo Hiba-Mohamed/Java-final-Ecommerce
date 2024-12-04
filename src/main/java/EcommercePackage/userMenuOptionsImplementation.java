@@ -12,65 +12,75 @@ public class userMenuOptionsImplementation {
     private static final ProductServices productService = new ProductServices();
     private static final Scanner scanner = new Scanner(System.in);
     private static String loggedInUser = null;
+
     public static void main(String[] args) {
         userService.executeUserDatabaseSetUpOperations();
         displayLoginRegisterMenu(userService);
     }
 
     public static void displayLoginRegisterMenu(UserService userService) {
-        System.out.println("User Dashboard:");
-        System.out.println("1. Login");
-        System.out.println("2. Register as a new user");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-        String loggedInUser = null;
+        while (true) {
+            System.out.println("User Dashboard:");
+            System.out.println("1. Login");
+            System.out.println("2. Register as a new user");
+            System.out.println("3. Quit");
+            System.out.print("Enter your choice: ");
+            
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Clear the newline character
+            String loggedInUser = null;
 
-        if (choice == 1) {
-            // Login logic
-            System.out.println("Enter username:");
-            String username = scanner.nextLine();
-            System.out.println("Enter Password:");
-            String password = scanner.nextLine();
+            if (choice == 1) {
+                // Login logic
+                System.out.println("Enter username:");
+                String username = scanner.nextLine();
+                System.out.println("Enter Password:");
+                String password = scanner.nextLine();
 
-            int userRole = userService.login(username, password);  // login method assumes a return value representing role
+                int userRole = userService.login(username, password);  // login method assumes a return value representing role
 
-            switch (userRole){
-                case 1:
-                    System.out.println("Login successful. Welcome, " + username);
-                    loggedInUser = username;
-                    showAdminMenu();
-                    break;
-                case 2:
-                    System.out.println("Login successful. Welcome, " + username);
-                    loggedInUser = username;
-                    showSellerMenu();
-                    break;
-                case 3:
-                    System.out.println("Login successful. Welcome, " + username);
-                    loggedInUser = username;
-                    showBuyerMenu();
-                    break;
-                default:
-                    System.out.println("Login failed. Please check your credentials.");
-                    break;
+                switch (userRole) {
+                    case 1:
+                        System.out.println("Login successful. Welcome, " + username);
+                        loggedInUser = username;
+                        showAdminMenu();
+                        break;
+                    case 2:
+                        System.out.println("Login successful. Welcome, " + username);
+                        loggedInUser = username;
+                        showSellerMenu();
+                        break;
+                    case 3:
+                        System.out.println("Login successful. Welcome, " + username);
+                        loggedInUser = username;
+                        showBuyerMenu();
+                        break;
+                    default:
+                        System.out.println("Login failed. Please check your credentials.");
+                        break;
+                }
+            } else if (choice == 2) {
+                // Registration
+                System.out.println("Enter username:");
+                String username = scanner.nextLine();
+                System.out.println("Enter Password:");
+                String password = scanner.nextLine();
+                System.out.println("Enter email:");
+                String email = scanner.nextLine();
+
+                // In real application, add logic to store and validate new user info
+                User newUserByDefaultIsBuyer = new Buyer(username, email, password);  // Default role set as Buyer
+                userService.addUser(newUserByDefaultIsBuyer);
+                System.out.println("Registration successful. Welcome, " + username);
+                loggedInUser = username;
+                showBuyerMenu();
+            } else if (choice == 3) {
+                // Quit logic
+                System.out.println("Thank you for using the system. Goodbye!");
+                System.exit(0);
+            } else {
+                System.out.println("Invalid option, please try again.");
             }
-        } else if (choice == 2) {
-            // Registration
-            System.out.println("Enter username:");
-            String username = scanner.nextLine();
-            System.out.println("Enter Password:");
-            String password = scanner.nextLine();
-            System.out.println("Enter email:");
-            String email = scanner.nextLine();
-
-            // In real application, add logic to store and validate new user info
-            User newUserByDefaultIsBuyer = new Buyer(username, email, password);  // Default role set as Buyer
-            userService.addUser(newUserByDefaultIsBuyer);
-            System.out.println("Registration successful. Welcome, " + username);
-            loggedInUser = username;
-            showBuyerMenu();
-        } else {
-            System.out.println("Invalid option, please try again.");
         }
     }
 
@@ -84,7 +94,7 @@ public class userMenuOptionsImplementation {
         int choice = scanner.nextInt();
         scanner.nextLine();
 
-        switch (choice){
+        switch (choice) {
             case 1:
                 userService.getAllUsers();
                 break;
@@ -119,7 +129,7 @@ public class userMenuOptionsImplementation {
         System.out.println("5. Log out");
         int choice = scanner.nextInt();
         scanner.nextLine();
-        switch (choice){
+        switch (choice) {
             case 1:
                 System.out.println("Enter product name:");
                 String productName = scanner.nextLine();
@@ -144,7 +154,8 @@ public class userMenuOptionsImplementation {
                 int newQuantity = scanner.nextInt();
                 System.out.println("Enter product Seller Id:");
                 int newSellerId = scanner.nextInt();
-                Product newProductObjectToReplaceOldProduct = new Product (product_id, newProductName , newPrice, newQuantity, newSellerId);
+                Product newProductObjectToReplaceOldProduct = new Product(product_id, newProductName, newPrice,
+                        newQuantity, newSellerId);
                 productService.updateProduct(newProductObjectToReplaceOldProduct);
                 showSellerMenu();
                 break;
@@ -179,7 +190,7 @@ public class userMenuOptionsImplementation {
         System.out.println("4. Log out");
         int choice = scanner.nextInt();
         scanner.nextLine();
-        switch (choice){
+        switch (choice) {
             case 1:
                 productService.getAllProducts();
                 break;
