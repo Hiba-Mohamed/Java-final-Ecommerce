@@ -340,7 +340,7 @@ public class UserDAO{
         String[][] sampleUsers = {
                 { "john_doe", "john@example.com", "secret123", "1" }, // 1 = ADMIN
                 { "jane_doe", "jane@example.com", "password456", "3" }, // 3 = BUYER
-                { "mark_smith", "mark@example.com", "markspassword", "2" }, // 2 = SELLER
+                { "mark_smith", "mark@example.com", "12345", "2" }, // 2 = SELLER
                 { "emma_brown", "emma@example.com", "emmapassword", "3" },
                 { "lucas_white", "lucas@example.com", "lucaspassword", "2" },
                 { "mia_black", "mia@example.com", "miapassword", "1" },

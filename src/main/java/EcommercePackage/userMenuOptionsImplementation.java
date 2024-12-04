@@ -1,13 +1,15 @@
 package EcommercePackage;
 import java.util.Scanner;
+
+import EcommercePackage.productmanagement.Product;
+import EcommercePackage.productmanagement.ProductServices;
 import EcommercePackage.user.Buyer;
 import EcommercePackage.user.User;
 import EcommercePackage.user.UserService;
-import EcommercePackage.productmanagement.ProductService;
 
 public class userMenuOptionsImplementation {
     private static final UserService userService = new UserService();
-    private static final ProductService productService = new ProductService();
+    private static final ProductServices productService = new ProductServices();
     private static final Scanner scanner = new Scanner(System.in);
     private static String loggedInUser = null;
     public static void main(String[] args) {
@@ -127,12 +129,13 @@ public class userMenuOptionsImplementation {
                 int productQuantity = scanner.nextInt();
                 System.out.println("Enter product Seller Id:");
                 int productSellerId = scanner.nextInt();
-                Product productToAdd = new Product (productName, productPrice, productQuantity, productSellerId);
-                productService.addProduct(product);
+                Product productToAdd = new Product(productName, productPrice, productQuantity, productSellerId);
+                productService.addProduct(productToAdd);
                 break;
             case 2:
                 System.out.println("Enter product Id you want to update:");
-                int productID = scanner.nextInt();
+                int product_id = scanner.nextInt();
+                scanner.nextLine();
                 System.out.println("Enter product name:");
                 String newProductName = scanner.nextLine();
                 System.out.println("Enter product price:");
@@ -141,8 +144,8 @@ public class userMenuOptionsImplementation {
                 int newQuantity = scanner.nextInt();
                 System.out.println("Enter product Seller Id:");
                 int newSellerId = scanner.nextInt();
-                Product newProductObjectToReplaceOldProduct = new Product (newProductName , newPrice, newQuantity, newSellerId);
-                productService.updateProduct(productID, newProductObjectToReplaceOldProduct);
+                Product newProductObjectToReplaceOldProduct = new Product (product_id, newProductName , newPrice, newQuantity, newSellerId);
+                productService.updateProduct(newProductObjectToReplaceOldProduct);
                 showSellerMenu();
                 break;
             case 3:
@@ -151,6 +154,7 @@ public class userMenuOptionsImplementation {
                 productService.deleteProduct(productToBeDeletedId);
                 break;
             case 4:
+                System.out.println("Enter product name you want to search for:");
                 productService.getAllProducts();
                 break;
             case 5:
@@ -180,14 +184,14 @@ public class userMenuOptionsImplementation {
                 productService.getAllProducts();
                 break;
             case 2:
-                System.out.println("Enter product Id you want to look up:");
-                int productNameToSearch = scanner.nextInt();
-                productService.searchProductByName(productToSearchID);
+                System.out.println("Enter product name you want to look up:");
+                String productName = scanner.nextLine();
+                productService.viewProductsByName(productName);
                 break;
             case 3:
                 System.out.println("Enter product Id, to view product details:");
                 int productID = scanner.nextInt();
-                productService.searchProductById(productID);
+                productService.viewProductsBySeller(productID);
                 break;
             case 4:
                 loggedInUser = null;

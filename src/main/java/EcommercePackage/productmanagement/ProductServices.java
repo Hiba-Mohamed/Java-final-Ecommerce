@@ -32,6 +32,16 @@ public class ProductServices {
         }
     }
 
+    // Get products by Name
+    public List<Product> viewProductsByName(String productName) {
+        try {
+            return productDAO.viewProductsByName(productName);
+        } catch (SQLException error) {
+            System.out.println("Error in ProductServices: " + error.getMessage());
+            return null;
+        }
+    }
+
     // Add a new product
     public boolean addProduct(Product product) {
         try {

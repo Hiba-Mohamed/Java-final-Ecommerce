@@ -11,6 +11,10 @@ import EcommercePackage.database.DatabaseConnection;
 
 public class ProductDAO {
 
+    public static Connection connectToDataBase() throws SQLException {
+        return DatabaseConnection.getConnection();
+    }
+    
     // Get all products
     public List<Product> getAllProducts() throws SQLException {
         String sql = "SELECT * FROM products"; // SQL query to fetch all products
@@ -72,6 +76,39 @@ public class ProductDAO {
         return products;
     }
 
+    // Get all products by product name
+    public List<Product> viewProductsByName(String productName) throws SQLException {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM products WHERE productName = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, productName);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+
+                    int productId = resultSet.getInt("product_id");
+                    String productName1 = resultSet.getString("productName");
+                    double productPrice = resultSet.getDouble("productPrice");
+                    int productQuantity = resultSet.getInt("productQuantity");
+                    int productSellerId = resultSet.getInt("productSellerId");
+
+                    // Create a Product object and add it to the list
+                    Product product = new Product(productId, productName1, productPrice, productQuantity,
+                            productSellerId);
+                    products.add(product);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching products by seller: " + e.getMessage());
+        }
+
+        return products;
+    }
+    
     // Add a new product
     public void addProduct(Product product) throws SQLException {
         String sql = "INSERT INTO products (productName, productPrice, productQuantity, productSellerId) VALUES (?, ?, ?, ?)";
@@ -87,9 +124,13 @@ public class ProductDAO {
             int rowsAffected = preparedStatement.executeUpdate();
 
             if (rowsAffected > 0) {
+                System.out.println("----------------------------");
                 System.out.println("Product added successfully.");
+                System.out.println("----------------------------");
             } else {
-                System.out.println("No product added.");
+                System.out.println("----------------------------");
+                System.out.println("Product insertion failed.");
+                System.out.println("----------------------------");
             }
         } catch (SQLException error) {
             System.out.println("Error adding product: " + error.getMessage());
@@ -99,7 +140,7 @@ public class ProductDAO {
 
     // Update a product
     public boolean updateProduct(Product product) throws SQLException {
-        String sql = "UPDATE products SET productName = ?, productPrice = ?, productQuantity = ? WHERE product_id = ?";
+        String sql = "UPDATE products SET productName = ?, productPrice = ?, productQuantity = ?, productSellerID = ? where product_id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -107,15 +148,21 @@ public class ProductDAO {
             preparedStatement.setString(1, product.getProductName());
             preparedStatement.setDouble(2, product.getProductPrice());
             preparedStatement.setInt(3, product.getProductQuantity());
-            preparedStatement.setInt(4, product.getProductId());
+            preparedStatement.setInt(4, product.getProductSellerId());
+            preparedStatement.setInt(5, product.getProductId());
+
 
             int rowsAffected = preparedStatement.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("Product updated successfully.");
+                System.out.println("----------------------------");
+                System.out.println("'" + product + "' is updated successfully.");
+                System.out.println("----------------------------");
                 return true;
             } else {
+                System.out.println("----------------------------");
                 System.out.println("No product found with the given ID.");
+                System.out.println("----------------------------");
                 return false;
             }
         } catch (SQLException error) {
@@ -139,7 +186,8 @@ public class ProductDAO {
 
             // Provide feedback based on whether any rows were deleted
             if (rowsAffected > 0) {
-                System.out.println("Product deleted successfully.");
+                System.out.println("----------------------------");
+                System.out.println("Product with Product ID: '" + productId + "' is deleted successfully.");
                 return true;
             } else {
                 System.out.println("No product found with the given ID.");
