@@ -9,7 +9,8 @@ public class userMenuOptionsImplementation {
     private static final UserService userService = new UserService();
     private static final ProductService productService = new ProductService();
     private static final Scanner scanner = new Scanner(System.in);
-    private static String loggedInUser = null;    public static void main(String[] args) {
+    private static String loggedInUser = null;
+    public static void main(String[] args) {
         userService.executeUserDatabaseSetUpOperations();
         displayLoginRegisterMenu(userService);
     }
@@ -98,7 +99,6 @@ public class userMenuOptionsImplementation {
             case 4:
                 loggedInUser = null;
                 System.out.println("Logged out successfully.");
-
                 break;
             default:
                 System.out.println("Invalid option, please try again.");
@@ -181,8 +181,8 @@ public class userMenuOptionsImplementation {
                 break;
             case 2:
                 System.out.println("Enter product Id you want to look up:");
-                int productToSearchID = scanner.nextInt();
-                productService.searchProductById(productToSearchID);
+                int productNameToSearch = scanner.nextInt();
+                productService.searchProductByName(productToSearchID);
                 break;
             case 3:
                 System.out.println("Enter product Id, to view product details:");
