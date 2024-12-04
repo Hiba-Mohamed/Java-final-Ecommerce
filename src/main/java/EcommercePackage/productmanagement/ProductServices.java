@@ -35,11 +35,11 @@ public class ProductServices {
     // Add a new product
     public boolean addProduct(Product product) {
         try {
-            if (product.getPrice() <= 0) {
+            if (product.getProductPrice() <= 0) {
                 System.out.println("Price must be greater than zero.");
                 return false;
             }
-            if (product.getQuantity() <= 0) {
+            if (product.getProductQuantity() <= 0) {
                 System.out.println("Quantity must be greater than zero.");
                 return false;
             }
