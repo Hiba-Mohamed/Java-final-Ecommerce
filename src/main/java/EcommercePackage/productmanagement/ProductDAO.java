@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,10 +30,9 @@ public class ProductDAO {
                 double price = rs.getDouble("price");
                 int quantity = rs.getInt("quantity");
                 int sellerId = rs.getInt("seller_id");
-                Timestamp createdAt = rs.getTimestamp("created_at");
 
                 // Add product to the list
-                Product product = new Product(product_id, name, price, quantity, sellerId, createdAt);
+                Product product = new Product(product_id, name, price, quantity, sellerId);
                 products.add(product);
             }
 
@@ -64,10 +62,9 @@ public class ProductDAO {
                     double price = resultSet.getDouble("price");
                     int quantity = resultSet.getInt("quantity");
                     int sellerIdFromDB = resultSet.getInt("seller_id");
-                    Timestamp createdAt = resultSet.getTimestamp("created_at");
 
                     // Create a Product object and add it to the list
-                    Product product = new Product(productId, name, price, quantity, sellerIdFromDB, createdAt);
+                    Product product = new Product(productId, name, price, quantity, sellerIdFromDB);
                     products.add(product);
                 }
             }
@@ -81,7 +78,7 @@ public class ProductDAO {
 
     // Add a new product
     public void addProduct(Product product) throws SQLException {
-        String sql = "INSERT INTO products (name, price, quantity, seller_id, created_at) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO products (name, price, quantity, seller_id) VALUES (?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
