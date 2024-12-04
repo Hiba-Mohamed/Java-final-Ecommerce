@@ -25,49 +25,49 @@ public class Product {
     }
 
     // Getters and Setters
-    public int getId() {
+    public int getProductId() {
         return this.product_id;
     }
 
-    public void setId(int product_id) {
+    public void setProductId(int product_id) {
         this.product_id = product_id;
     }
 
-    public String getName() {
+    public String getProductName() {
         return this.productName;
     }
 
-    public void setName(String productName) {
+    public void setProductName(String productName) {
         this.productName = productName;
     }
 
-    public double getPrice() {
+    public double getProductPrice() {
         return this.productPrice;
     }
 
-    public void setPrice(double productPrice) {
+    public void setProductPrice(double productPrice) {
         this.productPrice = productPrice;
     }
 
-    public int getQuantity() {
+    public int getProductQuantity() {
         return this.productQuantity;
     }
 
-    public void setQuantity(int productQuantity) {
+    public void setProductQuantity(int productQuantity) {
         this.productQuantity = productQuantity;
     }
 
-    public int getSellerId() {
+    public int getProductSellerId() {
         return this.productSellerId;
     }
 
-    public void setSellerId(int productSellerId) {
+    public void setProductSellerId(int productSellerId) {
         this.productSellerId = productSellerId;
     }
 
     // Utility methods
-    public void updateStock(int newQuantity) {
-        this.productQuantity = newQuantity;
+    public void updateProductStock(int newProductQuantity) {
+        this.productQuantity = newProductQuantity;
     }
 
     @Override
