@@ -1,6 +1,7 @@
 package EcommercePackage;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -64,7 +65,7 @@ public class SQL {
                 if (productResultSet.next() && productResultSet.getInt("product_count") > 0) {
                     System.out.println("Sample product data already exists. Skipping insertion.");
                 } else {
-                    String insertProductsSql = generateInsertProductsSql();
+                    String insertProductsSql = generateInsertProductsSql(connection);
                     statement.execute(insertProductsSql);
                     System.out.println("Sample product data inserted successfully.");
                 }
@@ -109,30 +110,40 @@ public class SQL {
         return sqlBuilder.toString();
     }
 
-    private static String generateInsertProductsSql() {
+    private static String generateInsertProductsSql(Connection connection) throws SQLException {
         String[][] sampleProducts = {
-                { "Apple iPhone 14", "999.99", "100", "2" }, // seller_id = 2 (SELLER)
-                { "Samsung Galaxy S21", "799.99", "150", "2" },
-                { "Sony WH-1000XM4", "349.99", "200", "2" },
-                { "Apple MacBook Air", "1299.99", "50", "2" },
-                { "Dell XPS 13", "1099.99", "75", "2" },
-                { "Bose SoundLink Speaker", "249.99", "120", "2" },
-                { "HP Spectre x360", "1399.99", "40", "2" },
-                { "Google Pixel 7", "599.99", "100", "2" },
-                { "Canon EOS R10", "1099.00", "30", "2" },
-                { "Microsoft Surface Pro 9", "999.00", "60", "2" }
+                { "Apple iPhone 14", "999.99", "100", "mark_smith" },
+                { "Samsung Galaxy S21", "799.99", "150", "lucas_white" },
+                { "Sony WH-1000XM4", "349.99", "200", "olivia_green" },
+                { "Apple MacBook Air", "1299.99", "50", "sophia_grey" },
+                { "Dell XPS 13", "1099.99", "75", "mark_smith" },
+                { "Bose SoundLink Speaker", "249.99", "120", "mark_smith" },
+                { "HP Spectre x360", "1399.99", "40", "sophia_grey" },
+                { "Google Pixel 7", "599.99", "100", "mark_smith" },
+                { "Canon EOS R10", "1099.00", "30", "lucas_white" },
+                { "Microsoft Surface Pro 9", "999.00", "60", "olivia_green" }
         };
 
         StringBuilder sqlBuilder = new StringBuilder(
-                "INSERT INTO products (productName, productPrice, productQuantity, productSellerId) VALUES ");
+                "INSERT INTO products (productName, productPrice, productQuantity, productSellerId, sellerName, sellerEmail) VALUES ");
 
         for (int i = 0; i < sampleProducts.length; i++) {
             String name = sampleProducts[i][0];
             String price = sampleProducts[i][1];
             String quantity = sampleProducts[i][2];
-            String sellerId = sampleProducts[i][3];
+            String sellerName = sampleProducts[i][3];
 
-            sqlBuilder.append(String.format("('%s', %s, %s, %s)", name, price, quantity, sellerId));
+            int sellerId = getSellerIdByName(connection, sellerName);
+            if (sellerId == -1) {
+            System.out.println("Seller not found: " + sellerName);
+            continue;
+        }
+
+            
+            String sellerEmail = getSellerEmailById(connection, sellerId);
+        
+            sqlBuilder.append(String.format("('%s', %s, %s, %s, '%s', '%s')",
+                name, price, quantity, sellerId, sellerName, sellerEmail));
 
             // Add a comma unless it's the last product
             if (i < sampleProducts.length - 1) {
@@ -143,6 +154,30 @@ public class SQL {
         }
 
         return sqlBuilder.toString();
+    }
+
+    private static int getSellerIdByName(Connection connection, String sellerName) throws SQLException {
+        String query = "SELECT user_id FROM users WHERE username = ? AND role_id = 2"; // role_id = 2 for SELLER
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, sellerName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("user_id"); 
+            }
+        }
+        return -1; 
+    }
+
+    private static String getSellerEmailById(Connection connection, int sellerId) throws SQLException {
+        String query = "SELECT email FROM users WHERE user_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, sellerId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("email");
+            }
+        }
+        return null; 
     }
 
     private static void executeSqlQueries(Connection connection) throws SQLException {
@@ -166,6 +201,8 @@ public class SQL {
                 "    productPrice DECIMAL(10, 2) NOT NULL," +
                 "    productQuantity INT NOT NULL," +
                 "    productSellerId INT," +
+                "    sellerName VARCHAR(50)," +
+                "    sellerEmail VARCHAR(100)," +
                 "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                 ");";
 
