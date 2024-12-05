@@ -87,12 +87,12 @@ public class ProductDAO {
     // Get all products by product name
     public List<Product> viewProductsByName(String productName) throws SQLException {
         List<Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM products WHERE productName = ?";
+        String sql = "SELECT * FROM products WHERE LOWER(productName) = LOWER(?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setString(1, productName);
+            preparedStatement.setString(1, productName.toLowerCase());
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
