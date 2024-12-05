@@ -63,22 +63,13 @@ public class UserDAO{
 
                 // Compare the provided password with the hashed password
                 if (!BCrypt.checkpw(password, currentHashedPassword)) {
-                    System.out.println("------------------------------------");
-                    System.out.println("| Password is incorrect.           |");
-                    System.out.println("------------------------------------");
                     return 0; // Login failed, return 0 (or other failure indicator)
                 }
 
                 // Login successful
-                System.out.println("------------------------------------");
-                System.out.println("| Login successful.                |");
-                System.out.println("------------------------------------");
-                return roleId; // Return role_id for further use (e.g., role-based access)
+                return roleId;
 
             } else {
-                System.out.println("------------------------------------");
-                System.out.println("| Username not found.              |");
-                System.out.println("------------------------------------");
                 return 0; // Username not found, return 0
             }
         } catch (SQLException e) {
@@ -132,13 +123,9 @@ public class UserDAO{
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("---------------------------------------------------");
-                System.out.println("|  User '" + username + "' removed successfully.  |");
-                System.out.println("---------------------------------------------------");
+                System.out.println("\nUser removed successfully!");
             } else {
-                System.out.println("--------------------------------------------------------");
-                System.out.println("|  No user found with the username '" + username + "'.  |");
-                System.out.println("--------------------------------------------------------");
+                System.out.println("\nNo user found with the username '" + username + "'.");
             }
         } catch (SQLException e) {
             System.out.println("Error while removing user: " + e.getMessage());
