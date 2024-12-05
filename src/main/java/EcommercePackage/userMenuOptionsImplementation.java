@@ -149,6 +149,7 @@ public class userMenuOptionsImplementation {
             System.out.println("3. Delete a product");
             System.out.println("4. View my products");
             System.out.println("5. Log out");
+            System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
             switch (choice) {
@@ -169,20 +170,20 @@ public class userMenuOptionsImplementation {
                     productService.addProduct(productToAdd);
                     break;
                 case 2:
-                    System.out.println("Enter product Id you want to update:");
+                    System.out.println("\nEnter product Id you want to update:");
                     int product_id = scanner.nextInt();
                     scanner.nextLine();
-                    System.out.println("Enter product name:");
+                    System.out.println("\nEnter product name:");
                     String newProductName = scanner.nextLine();
-                    System.out.println("Enter product price:");
+                    System.out.println("\nEnter product price:");
                     double newPrice = scanner.nextDouble();
-                    System.out.println("Enter product Quantity:");
+                    System.out.println("\nEnter product Quantity:");
                     int newQuantity = scanner.nextInt();
-                    System.out.println("Enter product Seller Id:");
+                    System.out.println("\nEnter product Seller Id:");
                     int newSellerId = scanner.nextInt();
-                    System.out.println("Enter seller name:");
+                    System.out.println("\nEnter seller name:");
                     String sellerNewName = scanner.nextLine();
-                    System.out.println("Enter seller email:");
+                    System.out.println("\nEnter seller email:");
                     String newEmail = scanner.nextLine();
                     Product newProductObjectToReplaceOldProduct = new Product(product_id, newProductName, newPrice,
                             newQuantity, newSellerId, sellerNewName, newEmail);
@@ -212,18 +213,38 @@ public class userMenuOptionsImplementation {
 
     // Buyer menu options
     private static void showBuyerMenu() {
-        Scanner scanner = new Scanner(System.in);
+    Scanner scanner = new Scanner(System.in);
+    boolean continueSession = true; // Variable to control the session loop
 
-        System.out.println("Buyer Dashboard:");
+    while (continueSession) {
+        System.out.println("\nBuyer Dashboard:");
         System.out.println("1. Browse products");
-        System.out.println("2. Search for a specific product");
+        System.out.println("2. Search for a product by its name");
         System.out.println("3. View product details");
         System.out.println("4. Log out");
+        System.out.print("Enter your choice: ");
         int choice = scanner.nextInt();
-        scanner.nextLine();
+        scanner.nextLine(); // Consume the newline character after nextInt()
+
         switch (choice) {
             case 1:
-                productService.getAllProducts();
+                // Show all products
+                List<Product> products = productService.getAllProducts();
+                if (products.isEmpty()) {
+                    System.out.println("No products available.");
+                } else {
+                    // Display all products
+                    System.out.println("\nProduct List:");
+                    for (Product product : products) {
+                        System.out.println("\nProduct ID: " + product.getProductId() +
+                                           ", Name: " + product.getProductName() +
+                                           ", Price: " + product.getProductPrice() +
+                                           ", Quantity: " + product.getProductQuantity() +
+                                           ", Seller: " + product.getSellerName() +
+                                           ", Email: " + product.getSellerEmail());
+                    }
+                }
+                
                 break;
             case 2:
                 System.out.println("Enter product name you want to look up:");
@@ -236,14 +257,20 @@ public class userMenuOptionsImplementation {
                 productService.viewProductsBySeller(productID);
                 break;
             case 4:
-                loggedInUser = null;
+                loggedInUser = null;  // Log out the user
                 System.out.println("Logged out successfully.");
+                continueSession = false; // End the session loop
                 break;
             default:
                 System.out.println("Invalid option, please try again.");
                 break;
-
         }
 
+        // If not logged out, the loop will continue, showing the buyer menu again
+        if (continueSession) {
+            System.out.println("\nReturning to Buyer Dashboard...");
+        }
     }
+}
+
 }
