@@ -16,6 +16,24 @@ public class UserDAO{
         return DatabaseConnection.getConnection();
     }
 
+    public String getHashedPassword(String username) throws SQLException {
+        String sql = "SELECT password, role_id FROM users WHERE username = ?";
+        
+        try (Connection connection = connectToDataBase();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("password");  // Return the hashed password
+            } else {
+                return null;  // No user found
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Error while fetching user password", e);
+        }
+    }
     public void getAllUsers() throws SQLException{
         String sql = "SELECT * FROM users"; // SQL query to fetch all users
 

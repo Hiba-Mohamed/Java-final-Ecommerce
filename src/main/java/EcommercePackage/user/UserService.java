@@ -1,7 +1,13 @@
 package EcommercePackage.user;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import EcommercePackage.SQL;
+import EcommercePackage.database.DatabaseConnection;
 
 public class UserService {
     private final UserDAO userDAO;
@@ -10,15 +16,49 @@ public class UserService {
         userDAO = new UserDAO();
     }
 
-    public int login(String username, String password) {
-        try {
-            return userDAO.login(username, password);
+    // public int login(String username, String password) {
+    //     try {
+    //         return userDAO.login(username, password);
+    //     } catch (SQLException e) {
+    //         System.out.println("Error login: " + e.getMessage());
+    //         return 0; // Return 0 for failed login
+    //     }
+    // }
+
+    public int[] login(String username, String password) {
+        String sql = "SELECT u.user_id, u.password, u.role_id, r.role FROM users u "
+                    + "JOIN roles r ON u.role_id = r.id "
+                    + "WHERE u.username = ?";
+        
+        try (Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            
+            preparedStatement.setString(1, username);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                String hashedPassword = resultSet.getString("password");  // Retrieve the hashed password
+                int userId = resultSet.getInt("user_id");
+                int roleId = resultSet.getInt("role_id");
+                String role = resultSet.getString("role"); // Role name from the roles table
+
+                // Compare the entered password with the stored hashed password using BCrypt
+                if (BCrypt.checkpw(password, hashedPassword)) {
+                    System.out.println("Role: " + role);  // For debugging
+                    return new int[] { userId, roleId };
+                } else {
+                    System.out.println("Invalid username or password.");
+                    return new int[] { -1, -1 };  // Indicate login failure
+                }
+            } else {
+                System.out.println("Invalid username or password.");
+                return new int[] { -1, -1 };  // Username not found
+            }
         } catch (SQLException e) {
-            System.out.println("Error login: " + e.getMessage());
-            return 0; // Return 0 for failed login
+            System.out.println("Error during login: " + e.getMessage());
+            return new int[] { -1, -1 };  // Indicate login failure due to an error
         }
     }
-
     public void getAllUsers() {
         try {
             userDAO.getAllUsers();
@@ -133,7 +173,7 @@ public class UserService {
 
     public boolean executeUserDatabaseSetUpOperations() {
         try {
-            SQL.executeUserDatabaseSetUpOperations(); 
+            SQL.executeUserDatabaseSetUpOperations();
             System.out.println("Sample data loaded successfully!");
             return true;
         } catch (SQLException e) {
