@@ -13,6 +13,8 @@ public class userMenuOptionsImplementation {
     private static final ProductServices productService = new ProductServices();
     private static final Scanner scanner = new Scanner(System.in);
     private static String loggedInUser = null;
+    private static int loggedInSellerId; 
+
 
     public static void main(String[] args) {
         userService.executeUserDatabaseSetUpOperations();
@@ -144,31 +146,39 @@ public class userMenuOptionsImplementation {
     private static void showSellerMenu() {
         while (true) {
             System.out.println("\nSeller Dashboard:");
-            System.out.println("1. Add a new product");
+            System.out.println("1. View my products");
             System.out.println("2. Update an existing product");
-            System.out.println("3. Delete a product");
-            System.out.println("4. View my products");
+            System.out.println("3. Add a new product");
+            System.out.println("4. Delete a product");
             System.out.println("5. Log out");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
             switch (choice) {
                 case 1:
-                    System.out.println("\nEnter product name:");
-                    String productName = scanner.nextLine();
-                    System.out.println("\nEnter product price:");
-                    double productPrice = scanner.nextDouble();
-                    System.out.println("\nEnter product Quantity:");
-                    int productQuantity = scanner.nextInt();
-                     scanner.nextLine();
-                    System.out.println("\nEnter seller name:");
-                    String sellerName = scanner.nextLine();
-                    System.out.println("\nEnter seller email:");
-                    String sellerEmail = scanner.nextLine();
-                    Product productToAdd = new Product(productName, productPrice, productQuantity, productQuantity,
-                            sellerName, sellerEmail);
-                    productService.addProduct(productToAdd);
-                    break;
+                    System.out.println("Enter your ID to get the list of all your products:");
+                    int sellerId = scanner.nextInt();
+                    scanner.nextLine();  // To handle the new line after reading an int
+
+                    // Call viewProductsBySeller to fetch the products for the given seller ID
+                    List<Product> products = productService.viewProductsBySeller(sellerId);
+
+                    // Check if products are found, and display them
+                    if (products.isEmpty()) {
+                        System.out.println("No products found for the given seller ID.");
+                    } else {
+                        // Display product details
+                        for (Product product : products) {
+                            System.out.println("\nProduct ID: " + product.getProductId());
+                            System.out.println("Product Name: " + product.getProductName());
+                            System.out.println("Product Price: $" + product.getProductPrice());
+                            System.out.println("Product Quantity: " + product.getProductQuantity());
+                            System.out.println("Seller Name: " + product.getSellerName());
+                            System.out.println("Seller Email: " + product.getSellerEmail());
+                            System.out.println("------------------------------------");
+                        }
+                    }
+                break;
                 case 2:
                     System.out.println("\nEnter product Id you want to update:");
                     int product_id = scanner.nextInt();
@@ -191,13 +201,25 @@ public class userMenuOptionsImplementation {
                     showSellerMenu();
                     break;
                 case 3:
+                     System.out.println("\nEnter product name:");
+                    String productName = scanner.nextLine();
+                    System.out.println("\nEnter product price:");
+                    double productPrice = scanner.nextDouble();
+                    System.out.println("\nEnter product Quantity:");
+                    int productQuantity = scanner.nextInt();
+                     scanner.nextLine();
+                    System.out.println("\nEnter seller name:");
+                    String sellerName = scanner.nextLine();
+                    System.out.println("\nEnter seller email:");
+                    String sellerEmail = scanner.nextLine();
+                    Product productToAdd = new Product(productName, productPrice, productQuantity, productQuantity,
+                            sellerName, sellerEmail);
+                    productService.addProduct(productToAdd);
+                    break;
+                case 4:
                     System.out.println("Enter product Id you want deleted:");
                     int productToBeDeletedId = scanner.nextInt();
                     productService.deleteProduct(productToBeDeletedId);
-                    break;
-                case 4:
-                    System.out.println("Enter product name you want to search for:");
-                    productService.getAllProducts();
                     break;
                 case 5:
                     loggedInUser = null;
