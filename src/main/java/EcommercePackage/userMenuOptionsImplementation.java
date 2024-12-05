@@ -156,70 +156,79 @@ public class userMenuOptionsImplementation {
             scanner.nextLine();
             switch (choice) {
                 case 1:
-                    System.out.println("Enter your ID to get the list of all your products:");
-                    int sellerId = scanner.nextInt();
-                    scanner.nextLine();  // To handle the new line after reading an int
+                //     System.out.println("Enter your ID to get the list of all your products:");
+                //     int sellerId = scanner.nextInt();
+                //     scanner.nextLine();  
 
-                    // Call viewProductsBySeller to fetch the products for the given seller ID
-                    List<Product> products = productService.viewProductsBySeller(sellerId);
+                //     List<Product> products = productService.viewProductsBySeller(sellerId);
 
-                    // Check if products are found, and display them
+                //     if (products.isEmpty()) {
+                //         System.out.println("No products found for the given seller ID.");
+                //     } else {
+                //         // Display product details
+                //         for (Product product : products) {
+                //             System.out.println("\nProduct ID: " + product.getProductId());
+                //             System.out.println("Product Name: " + product.getProductName());
+                //             System.out.println("Product Price: $" + product.getProductPrice());
+                //             System.out.println("Product Quantity: " + product.getProductQuantity());
+                //             System.out.println("Seller Name: " + product.getSellerName());
+                //             System.out.println("Seller Email: " + product.getSellerEmail());
+                //             System.out.println("------------------------------------");
+                //         }
+                //     }
+                // break;
+                List<Product> products = productService.viewProductsBySeller(loggedInSellerId);
+
                     if (products.isEmpty()) {
-                        System.out.println("No products found for the given seller ID.");
+                        System.out.println("No products found for your account.");
                     } else {
                         // Display product details
+                        System.out.println("\nYour Products:");
                         for (Product product : products) {
                             System.out.println("\nProduct ID: " + product.getProductId());
                             System.out.println("Product Name: " + product.getProductName());
                             System.out.println("Product Price: $" + product.getProductPrice());
                             System.out.println("Product Quantity: " + product.getProductQuantity());
-                            System.out.println("Seller Name: " + product.getSellerName());
-                            System.out.println("Seller Email: " + product.getSellerEmail());
                             System.out.println("------------------------------------");
                         }
                     }
-                break;
+                    break;
                 case 2:
                     System.out.println("\nEnter product Id you want to update:");
-                    int product_id = scanner.nextInt();
+                    int productId = scanner.nextInt();
                     scanner.nextLine();
-                    System.out.println("\nEnter product name:");
+
+                    System.out.println("\nEnter new product name:");
                     String newProductName = scanner.nextLine();
-                    System.out.println("\nEnter product price:");
+                    System.out.println("\nEnter new product price:");
                     double newPrice = scanner.nextDouble();
-                    System.out.println("\nEnter product Quantity:");
+                    System.out.println("\nEnter new product quantity:");
                     int newQuantity = scanner.nextInt();
-                    System.out.println("\nEnter product Seller Id:");
-                    int newSellerId = scanner.nextInt();
-                    System.out.println("\nEnter seller name:");
-                    String sellerNewName = scanner.nextLine();
-                    System.out.println("\nEnter seller email:");
-                    String newEmail = scanner.nextLine();
-                    Product newProductObjectToReplaceOldProduct = new Product(product_id, newProductName, newPrice,
-                            newQuantity, newSellerId, sellerNewName, newEmail);
-                    productService.updateProduct(newProductObjectToReplaceOldProduct);
-                    showSellerMenu();
+
+                    Product updatedProduct = new Product(productId, newProductName, newPrice, newQuantity, loggedInSellerId, null, null);
+                    productService.updateProduct(updatedProduct);
                     break;
                 case 3:
-                     System.out.println("\nEnter product name:");
+                    System.out.println("\nEnter product name:");
                     String productName = scanner.nextLine();
                     System.out.println("\nEnter product price:");
                     double productPrice = scanner.nextDouble();
-                    System.out.println("\nEnter product Quantity:");
+                    System.out.println("\nEnter product quantity:");
                     int productQuantity = scanner.nextInt();
-                     scanner.nextLine();
-                    System.out.println("\nEnter seller name:");
-                    String sellerName = scanner.nextLine();
-                    System.out.println("\nEnter seller email:");
-                    String sellerEmail = scanner.nextLine();
-                    Product productToAdd = new Product(productName, productPrice, productQuantity, productQuantity,
-                            sellerName, sellerEmail);
-                    productService.addProduct(productToAdd);
+                    scanner.nextLine(); // Consume the newline character
+
+                    Product newProduct = new Product(productName, productPrice, productQuantity, loggedInSellerId, null, null);
+                    productService.addProduct(newProduct);
                     break;
                 case 4:
-                    System.out.println("Enter product Id you want deleted:");
-                    int productToBeDeletedId = scanner.nextInt();
-                    productService.deleteProduct(productToBeDeletedId);
+                    System.out.println("\nEnter product ID to delete:");
+                    int productToDeleteId = scanner.nextInt();
+                    boolean isDeleted = productService.deleteProduct(productToDeleteId, loggedInSellerId);
+                    if (isDeleted) {
+                        System.out.println("Product successfully deleted.");
+                    } else {
+                        System.out.println("Failed to delete the product. Ensure the product ID is correct.");
+                    }
                     break;
                 case 5:
                     loggedInUser = null;
