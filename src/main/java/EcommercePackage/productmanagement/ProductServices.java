@@ -23,9 +23,9 @@ public class ProductServices {
     }
 
     // Get products by seller ID
-    public List<Product> getProductsBySellerId(int sellerId) {
+    public List<Product> viewProductsBySeller(int sellerId) {
         try {
-            return productDAO.getProductsBySellerId(sellerId);
+            return productDAO.viewProductsBySeller(sellerId);
         } catch (SQLException error) {
             System.out.println("Error in ProductServices: " + error.getMessage());
             return null;

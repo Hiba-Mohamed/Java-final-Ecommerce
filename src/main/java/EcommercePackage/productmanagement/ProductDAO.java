@@ -49,33 +49,35 @@ public class ProductDAO {
 
 
     // Get all products by seller id
-    public List<Product> getProductsBySellerId(int sellerId) throws SQLException {
+    public List<Product> viewProductsBySeller(int sellerId) throws SQLException {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM products WHERE productSellerId = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            // Set the sellerId parameter to filter products
             preparedStatement.setInt(1, sellerId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
+
                     int productId = resultSet.getInt("product_id");
                     String productName = resultSet.getString("productName");
                     double productPrice = resultSet.getDouble("productPrice");
                     int productQuantity = resultSet.getInt("productQuantity");
-                    String sellerName = resultSet.getString("sellerName");
-                    String sellerEmail = resultSet.getString("sellerEmail");
+                    int productSellerId = resultSet.getInt("productSellerId");
+                    String sellerName = resultSet.getString("sellerName"); 
+                    String sellerEmail = resultSet.getString("sellerEmail"); 
 
                     // Create a Product object and add it to the list
-                    Product product = new Product(productId, productName, productPrice, productQuantity, sellerId, sellerName, sellerEmail);
+                    Product product = new Product(productId, productName, productPrice, productQuantity, productSellerId,
+                            sellerName, sellerEmail);
                     products.add(product);
                 }
             }
 
         } catch (SQLException e) {
-            System.out.println("Error fetching products by seller ID: " + e.getMessage());
+            System.out.println("Error fetching products by seller: " + e.getMessage());
         }
 
         return products;
