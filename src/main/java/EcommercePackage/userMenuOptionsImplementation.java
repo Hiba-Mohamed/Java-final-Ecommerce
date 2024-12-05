@@ -32,6 +32,7 @@ public class userMenuOptionsImplementation {
             int choice = scanner.nextInt();
             scanner.nextLine(); // Clear the newline character
             String loggedInUser = null;
+            int loggedInSellerId = -1; // Add this to track seller ID
 
             if (choice == 1) {
                 // Login logic
@@ -40,27 +41,33 @@ public class userMenuOptionsImplementation {
                 System.out.println("\nEnter Password:");
                 String password = scanner.nextLine();
 
-                int userRole = userService.login(username, password);
+                int[] loginResult = userService.login(username, password);
+                int sellerId = loginResult[0];
+                int userRole = loginResult[1];
 
-                switch (userRole) {
-                    case 1:
-                        System.out.println("\nLogin successful. Welcome, " + username);
-                        loggedInUser = username;
-                        showAdminMenu();
-                        break;
-                    case 2:
-                        System.out.println("\nLogin successful. Welcome, " + username);
-                        loggedInUser = username;
-                        showSellerMenu();
-                        break;
-                    case 3:
-                        System.out.println("\nLogin successful. Welcome, " + username);
-                        loggedInUser = username;
-                        showBuyerMenu();
-                        break;
-                    default:
-                        System.out.println("\nLogin failed. Please check your credentials.");
-                        break;
+                if (sellerId != -1) {
+                    loggedInUser = username;
+                    loggedInSellerId = sellerId; // Set the seller ID here
+
+                    switch (userRole) {
+                        case 1:
+                            System.out.println("\nLogin successful. Welcome, " + username);
+                            showAdminMenu();
+                            break;
+                        case 2:
+                            System.out.println("\nLogin successful. Welcome, " + username);
+                            showSellerMenu(loggedInSellerId); // Pass seller ID
+                            break;
+                        case 3:
+                            System.out.println("\nLogin successful. Welcome, " + username);
+                            showBuyerMenu();
+                            break;
+                        default:
+                            System.out.println("\nLogin failed. Invalid role.");
+                            break;
+                    }
+                } else {
+                    System.out.println("\nLogin failed. Please check your credentials.");
                 }
             } else if (choice == 2) {
                 // Registration
@@ -71,7 +78,6 @@ public class userMenuOptionsImplementation {
                 System.out.println("\nEnter email:");
                 String email = scanner.nextLine();
 
-                // In real application, add logic to store and validate new user info
                 User newUserByDefaultIsBuyer = new Buyer(username, email, password); // Default role set as Buyer
                 userService.addUser(newUserByDefaultIsBuyer);
                 System.out.println("\nRegistration successful. Welcome, " + username);
@@ -86,6 +92,7 @@ public class userMenuOptionsImplementation {
             }
         }
     }
+
 
     private static void showAdminMenu() {
         while (true) {
@@ -143,7 +150,7 @@ public class userMenuOptionsImplementation {
     }
 
     // Seller menu options
-    private static void showSellerMenu() {
+    private static void showSellerMenu(int loggedInSellerId) {
         while (true) {
             System.out.println("\nSeller Dashboard:");
             System.out.println("1. View my products");
