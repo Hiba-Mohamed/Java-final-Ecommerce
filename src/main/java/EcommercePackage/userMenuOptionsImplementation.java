@@ -20,58 +20,58 @@ public class userMenuOptionsImplementation {
 
     public static void displayLoginRegisterMenu(UserService userService) {
         while (true) {
-            System.out.println("User Dashboard:");
+            System.out.println("\nUser Dashboard:");
             System.out.println("1. Login");
             System.out.println("2. Register as a new user");
             System.out.println("3. Quit");
             System.out.print("Enter your choice: ");
-            
+
             int choice = scanner.nextInt();
             scanner.nextLine(); // Clear the newline character
             String loggedInUser = null;
 
             if (choice == 1) {
                 // Login logic
-                System.out.println("Enter username:");
+                System.out.println("\nEnter username:");
                 String username = scanner.nextLine();
-                System.out.println("Enter Password:");
+                System.out.println("\nEnter Password:");
                 String password = scanner.nextLine();
 
-                int userRole = userService.login(username, password);  // login method assumes a return value representing role
+                int userRole = userService.login(username, password);
 
                 switch (userRole) {
                     case 1:
-                        System.out.println("Login successful. Welcome, " + username);
+                        System.out.println("\nLogin successful. Welcome, " + username);
                         loggedInUser = username;
                         showAdminMenu();
                         break;
                     case 2:
-                        System.out.println("Login successful. Welcome, " + username);
+                        System.out.println("\nLogin successful. Welcome, " + username);
                         loggedInUser = username;
                         showSellerMenu();
                         break;
                     case 3:
-                        System.out.println("Login successful. Welcome, " + username);
+                        System.out.println("\nLogin successful. Welcome, " + username);
                         loggedInUser = username;
                         showBuyerMenu();
                         break;
                     default:
-                        System.out.println("Login failed. Please check your credentials.");
+                        System.out.println("\nLogin failed. Please check your credentials.");
                         break;
                 }
             } else if (choice == 2) {
                 // Registration
-                System.out.println("Enter username:");
+                System.out.println("\nEnter username:");
                 String username = scanner.nextLine();
-                System.out.println("Enter Password:");
+                System.out.println("\nEnter Password:");
                 String password = scanner.nextLine();
-                System.out.println("Enter email:");
+                System.out.println("\nEnter email:");
                 String email = scanner.nextLine();
 
                 // In real application, add logic to store and validate new user info
-                User newUserByDefaultIsBuyer = new Buyer(username, email, password);  // Default role set as Buyer
+                User newUserByDefaultIsBuyer = new Buyer(username, email, password); // Default role set as Buyer
                 userService.addUser(newUserByDefaultIsBuyer);
-                System.out.println("Registration successful. Welcome, " + username);
+                System.out.println("\nRegistration successful. Welcome, " + username);
                 loggedInUser = username;
                 showBuyerMenu();
             } else if (choice == 3) {
@@ -85,38 +85,79 @@ public class userMenuOptionsImplementation {
     }
 
     // Admin menu options
+    // private static void showAdminMenu() {
+    //     System.out.println("Admin Dashboard:");
+    //     System.out.println("1. View all users");
+    //     System.out.println("2. Delete a user");
+    //     System.out.println("3. View all products with Seller info");
+    //     System.out.println("4. Log out");
+    //     int choice = scanner.nextInt();
+    //     scanner.nextLine();
+
+    //     switch (choice) {
+    //         case 1:
+    //             userService.getAllUsers();
+    //             break;
+    //         case 2:
+    //             System.out.println("Enter username:");
+    //             String usernameToDelete = scanner.nextLine();
+    //             userService.removeUser(usernameToDelete);
+    //             break;
+    //         case 3:
+    //             System.out.println("Enter Seller Id:");
+    //             int sellerId = scanner.nextInt();
+    //             productService.viewProductsBySeller(sellerId);
+    //             break;
+    //         case 4:
+    //             loggedInUser = null;
+    //             System.out.println("Logged out successfully.");
+    //             break;
+    //         default:
+    //             System.out.println("Invalid option, please try again.");
+    //             break;
+    //     }
+
+    // }
+
     private static void showAdminMenu() {
-        System.out.println("Admin Dashboard:");
-        System.out.println("1. View all users");
-        System.out.println("2. Delete a user");
-        System.out.println("3. View all products with Seller info");
-        System.out.println("4. Log out");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
+        while (true) {
+            System.out.println("\nAdmin Dashboard:");
+            System.out.println("1. View all users");
+            System.out.println("2. Delete a user");
+            System.out.println("3. View all products with Seller info");
+            System.out.println("4. Log out");
+            System.out.print("Enter your choice: ");
 
-        switch (choice) {
-            case 1:
-                userService.getAllUsers();
-                break;
-            case 2:
-                System.out.println("Enter username:");
-                String usernameToDelete = scanner.nextLine();
-                userService.removeUser(usernameToDelete);
-                break;
-            case 3:
-                System.out.println("Enter Seller Id:");
-                int sellerId = scanner.nextInt();
-                productService.viewProductsBySeller(sellerId);
-                break;
-            case 4:
-                loggedInUser = null;
-                System.out.println("Logged out successfully.");
-                break;
-            default:
-                System.out.println("Invalid option, please try again.");
-                break;
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) {
+                case 1:
+                    userService.getAllUsers(); 
+                    break;
+
+                case 2:
+                    System.out.print("\nEnter username to delete: ");
+                    String usernameToDelete = scanner.nextLine();
+                    userService.removeUser(usernameToDelete);
+                    break;
+
+                case 3:
+                    System.out.print("\nEnter Seller ID: ");
+                    int sellerId = scanner.nextInt();
+                    scanner.nextLine(); 
+                    productService.viewProductsBySeller(sellerId); 
+                    break;
+
+                case 4:
+                    loggedInUser = null; 
+                    System.out.println("Logged out successfully.");
+                    return; 
+
+                default:
+                    System.out.println("Invalid option, please try again.");
+            }
         }
-
     }
 
     // Seller menu options
