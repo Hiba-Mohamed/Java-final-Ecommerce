@@ -66,8 +66,8 @@ public class ProductDAO {
                     double productPrice = resultSet.getDouble("productPrice");
                     int productQuantity = resultSet.getInt("productQuantity");
                     int productSellerId = resultSet.getInt("productSellerId");
-                    String sellerName = resultSet.getString("sellerName"); // Fetch sellerName
-                    String sellerEmail = resultSet.getString("sellerEmail"); // Fetch sellerEmail
+                    String sellerName = resultSet.getString("sellerName"); 
+                    String sellerEmail = resultSet.getString("sellerEmail"); 
 
                     // Create a Product object and add it to the list
                     Product product = new Product(productId, productName, productPrice, productQuantity, productSellerId,
@@ -131,19 +131,15 @@ public class ProductDAO {
             preparedStatement.setDouble(2, product.getProductPrice());
             preparedStatement.setInt(3, product.getProductQuantity());
             preparedStatement.setInt(4, product.getProductSellerId());
-            preparedStatement.setString(5, product.getSellerName()); // Added sellerName
-            preparedStatement.setString(6, product.getSellerEmail()); // Added sellerEmail
+            preparedStatement.setString(5, product.getSellerName());
+            preparedStatement.setString(6, product.getSellerEmail()); 
 
             int rowsAffected = preparedStatement.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("----------------------------");
-                System.out.println("Product added successfully.");
-                System.out.println("----------------------------");
+                System.out.println("\nProduct added successfully.");
             } else {
-                System.out.println("----------------------------");
-                System.out.println("Product insertion failed.");
-                System.out.println("----------------------------");
+                System.out.println("\nProduct insertion failed.");
             }
         } catch (SQLException error) {
             System.out.println("Error adding product: " + error.getMessage());
