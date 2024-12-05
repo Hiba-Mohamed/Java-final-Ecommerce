@@ -244,13 +244,30 @@ public class userMenuOptionsImplementation {
                                            ", Email: " + product.getSellerEmail());
                     }
                 }
-                
                 break;
+
             case 2:
-                System.out.println("Enter product name you want to look up:");
+                System.out.println("\nEnter product name you want to look up:");
                 String productName = scanner.nextLine();
-                productService.viewProductsByName(productName);
+                
+                List<Product> searchResults = productService.viewProductsByName(productName);
+
+                if (searchResults.isEmpty()) {
+                    System.out.println("\nNo products found for the name: " + productName);
+                } else {
+                    // Display the matching products
+                    System.out.println("\nSearch Results for '" + productName + "':");
+                    for (Product product : searchResults) {
+                        System.out.println("Product ID: " + product.getProductId() +
+                                           ", Name: " + product.getProductName() +
+                                           ", Price: " + product.getProductPrice() +
+                                           ", Quantity: " + product.getProductQuantity() +
+                                           ", Seller: " + product.getSellerName() +
+                                           ", Email: " + product.getSellerEmail());
+                    }
+                }
                 break;
+
             case 3:
                 System.out.println("Enter product Id, to view product details:");
                 int productID = scanner.nextInt();
