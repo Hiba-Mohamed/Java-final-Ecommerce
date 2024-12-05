@@ -73,9 +73,9 @@ public class ProductServices {
     }
 
     // Delete a product by product ID
-    public boolean deleteProduct(int productId) {
+    public boolean deleteProduct(int productId, int sellerId) {
         try {
-            return productDAO.deleteProduct(productId);
+            return productDAO.deleteProduct(productId, sellerId);
         } catch (SQLException error) {
             System.out.println("Error in ProductServices: " + error.getMessage());
             return false;
