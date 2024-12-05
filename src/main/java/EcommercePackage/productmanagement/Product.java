@@ -1,32 +1,38 @@
 package EcommercePackage.productmanagement;
 
 public class Product {
-  // Attributes
+    // Attributes
     private int product_id;
     private String productName;
     private double productPrice;
     private int productQuantity;
     private int productSellerId;
+    private String sellerName;
+    private String sellerEmail;
 
-    // Constructor
-    public Product(int product_id, String productName, double productPrice, int productQuantity, int productSellerId) {
+    // Constructors
+    public Product(int product_id, String productName, double productPrice, int productQuantity, int productSellerId, String sellerName, String sellerEmail) {
         this.product_id = product_id;
         this.productName = productName;
         this.productPrice = productPrice;
         this.productQuantity = productQuantity;
         this.productSellerId = productSellerId;
+        this.sellerName = sellerName;
+        this.sellerEmail = sellerEmail;
     }
 
-    public Product(String productName, double productPrice, int productQuantity, int productSellerId) {
+    public Product(String productName, double productPrice, int productQuantity, int productSellerId, String sellerName, String sellerEmail) {
         this.productName = productName;
         this.productPrice = productPrice;
         this.productQuantity = productQuantity;
         this.productSellerId = productSellerId;
+        this.sellerName = sellerName;
+        this.sellerEmail = sellerEmail;
     }
 
     // Getters and Setters
     public int getProductId() {
-        return this.product_id;
+        return product_id;
     }
 
     public void setProductId(int product_id) {
@@ -34,7 +40,7 @@ public class Product {
     }
 
     public String getProductName() {
-        return this.productName;
+        return productName;
     }
 
     public void setProductName(String productName) {
@@ -42,7 +48,7 @@ public class Product {
     }
 
     public double getProductPrice() {
-        return this.productPrice;
+        return productPrice;
     }
 
     public void setProductPrice(double productPrice) {
@@ -50,7 +56,7 @@ public class Product {
     }
 
     public int getProductQuantity() {
-        return this.productQuantity;
+        return productQuantity;
     }
 
     public void setProductQuantity(int productQuantity) {
@@ -58,11 +64,27 @@ public class Product {
     }
 
     public int getProductSellerId() {
-        return this.productSellerId;
+        return productSellerId;
     }
 
     public void setProductSellerId(int productSellerId) {
         this.productSellerId = productSellerId;
+    }
+
+    public String getSellerName() {
+        return sellerName;
+    }
+
+    public void setSellerName(String sellerName) {
+        this.sellerName = sellerName;
+    }
+
+    public String getSellerEmail() {
+        return sellerEmail;
+    }
+
+    public void setSellerEmail(String sellerEmail) {
+        this.sellerEmail = sellerEmail;
     }
 
     // Utility methods
@@ -72,7 +94,8 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product [ID=" + this.product_id + ", Name=" + this.productName + ", Price=" + this.productPrice +
-               ", Quantity=" + this.productQuantity + ", Seller ID=" + this.productSellerId + "]";
+        return "Product [ID=" + product_id + ", Name=" + productName + ", Price=" + productPrice +
+               ", Quantity=" + productQuantity + ", Seller ID=" + productSellerId +
+               ", Seller Name=" + sellerName + ", Seller Email=" + sellerEmail + "]";
     }
 }
