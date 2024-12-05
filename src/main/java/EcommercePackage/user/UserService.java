@@ -51,7 +51,6 @@ public class UserService {
 
         try {
             userDAO.removeUser(username);
-            System.out.println("User removed successfully!");
             return true;
         } catch (SQLException e) {
             System.out.println("Error removing user: " + e.getMessage());
