@@ -120,17 +120,20 @@ public class ProductDAO {
 
     // Add a new product
     public void addProduct(Product product) throws SQLException {
-        String sql = "INSERT INTO products (productName, productPrice, productQuantity, productSellerId, sellerName, sellerEmail) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO products (productName, productPrice, productQuantity, productSellerId, sellerName, sellerEmail) " +
+                    "VALUES (?, ?, ?, ?, " +
+                    "(SELECT username FROM users WHERE user_id = ?), " +
+                    "(SELECT email FROM users WHERE user_id = ?))";
 
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, product.getProductName());
             preparedStatement.setDouble(2, product.getProductPrice());
             preparedStatement.setInt(3, product.getProductQuantity());
             preparedStatement.setInt(4, product.getProductSellerId());
-            preparedStatement.setString(5, product.getSellerName());
-            preparedStatement.setString(6, product.getSellerEmail());
+            preparedStatement.setInt(5, product.getProductSellerId()); 
+            preparedStatement.setInt(6, product.getProductSellerId()); 
 
             int rowsAffected = preparedStatement.executeUpdate();
 
@@ -193,10 +196,10 @@ public class ProductDAO {
                         int actualProductSellerId = resultSet.getInt("productSellerId");
 
                         if (actualProductSellerId != sellerId) {
-                            return false; 
+                            return false;
                         }
                     } else {
-                        return false; 
+                        return false;
                     }
                 }
             }
@@ -207,11 +210,11 @@ public class ProductDAO {
                 deleteStatement.setInt(2, sellerId);
 
                 int rowsAffected = deleteStatement.executeUpdate();
-                return rowsAffected > 0; 
+                return rowsAffected > 0;
             }
         } catch (SQLException e) {
             System.out.println("Error deleting product: " + e.getMessage());
-            throw e; 
+            throw e;
         }
     }
 }
