@@ -163,27 +163,6 @@ public class userMenuOptionsImplementation {
             scanner.nextLine();
             switch (choice) {
                 case 1:
-                //     System.out.println("Enter your ID to get the list of all your products:");
-                //     int sellerId = scanner.nextInt();
-                //     scanner.nextLine();  
-
-                //     List<Product> products = productService.viewProductsBySeller(sellerId);
-
-                //     if (products.isEmpty()) {
-                //         System.out.println("No products found for the given seller ID.");
-                //     } else {
-                //         // Display product details
-                //         for (Product product : products) {
-                //             System.out.println("\nProduct ID: " + product.getProductId());
-                //             System.out.println("Product Name: " + product.getProductName());
-                //             System.out.println("Product Price: $" + product.getProductPrice());
-                //             System.out.println("Product Quantity: " + product.getProductQuantity());
-                //             System.out.println("Seller Name: " + product.getSellerName());
-                //             System.out.println("Seller Email: " + product.getSellerEmail());
-                //             System.out.println("------------------------------------");
-                //         }
-                //     }
-                // break;
                 List<Product> products = productService.viewProductsBySeller(loggedInSellerId);
 
                     if (products.isEmpty()) {
@@ -205,13 +184,21 @@ public class userMenuOptionsImplementation {
                     int productId = scanner.nextInt();
                     scanner.nextLine();
 
+                    List<Product> sellerProducts = productService.viewProductsBySeller(loggedInSellerId);
+                    boolean isValidProduct = sellerProducts.stream()
+                            .anyMatch(product -> product.getProductId() == productId);
+                    
+                    if (!isValidProduct) {
+                        System.out.println("\nYou are not authorized to update this product.");
+                        break;
+                    }
+
                     System.out.println("\nEnter new product name:");
                     String newProductName = scanner.nextLine();
                     System.out.println("\nEnter new product price:");
                     double newPrice = scanner.nextDouble();
                     System.out.println("\nEnter new product quantity:");
                     int newQuantity = scanner.nextInt();
-
                     Product updatedProduct = new Product(productId, newProductName, newPrice, newQuantity, loggedInSellerId, null, null);
                     productService.updateProduct(updatedProduct);
                     break;
