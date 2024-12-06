@@ -1,4 +1,5 @@
 package EcommercePackage.productmanagement;
+import EcommercePackage.user.Seller;
 
 public class Product {
     // Attributes
@@ -6,28 +7,23 @@ public class Product {
     private String productName;
     private double productPrice;
     private int productQuantity;
-    private int productSellerId;
-    private String sellerName;
-    private String sellerEmail;
+    private int productSellerID;
+
 
     // Constructors
-    public Product(int product_id, String productName, double productPrice, int productQuantity, int productSellerId, String sellerName, String sellerEmail) {
+    public Product(int product_id, String productName, double productPrice, int productQuantity, int productSellerId) {
         this.product_id = product_id;
         this.productName = productName;
         this.productPrice = productPrice;
         this.productQuantity = productQuantity;
-        this.productSellerId = productSellerId;
-        this.sellerName = sellerName;
-        this.sellerEmail = sellerEmail;
+        this.productSellerID = productSellerId;
     }
 
-    public Product(String productName, double productPrice, int productQuantity, int productSellerId, String sellerName, String sellerEmail) {
+    public Product(String productName, double productPrice, int productQuantity, int productSellerId) {
         this.productName = productName;
         this.productPrice = productPrice;
         this.productQuantity = productQuantity;
-        this.productSellerId = productSellerId;
-        this.sellerName = sellerName;
-        this.sellerEmail = sellerEmail;
+        this.productSellerID = productSellerId;
     }
 
     // Getters and Setters
@@ -64,28 +60,14 @@ public class Product {
     }
 
     public int getProductSellerId() {
-        return productSellerId;
+        return productSellerID;
     }
+    public void setProductSellerId(int productSellerID) {
+        this.productSellerID = productSellerID;
+    };
 
-    public void setProductSellerId(int productSellerId) {
-        this.productSellerId = productSellerId;
-    }
 
-    public String getSellerName() {
-        return sellerName;
-    }
 
-    public void setSellerName(String sellerName) {
-        this.sellerName = sellerName;
-    }
-
-    public String getSellerEmail() {
-        return sellerEmail;
-    }
-
-    public void setSellerEmail(String sellerEmail) {
-        this.sellerEmail = sellerEmail;
-    }
 
     // Utility methods
     public void updateProductStock(int newProductQuantity) {
@@ -95,7 +77,6 @@ public class Product {
     @Override
     public String toString() {
         return "Product [ID=" + product_id + ", Name=" + productName + ", Price=" + productPrice +
-               ", Quantity=" + productQuantity + ", Seller ID=" + productSellerId +
-               ", Seller Name=" + sellerName + ", Seller Email=" + sellerEmail + "]";
+                ", Quantity=" + productQuantity + ", Seller ID=" + getProductSellerId();
     }
 }

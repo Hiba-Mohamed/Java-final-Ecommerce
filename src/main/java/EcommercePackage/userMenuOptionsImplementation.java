@@ -6,14 +6,17 @@ import EcommercePackage.productmanagement.Product;
 import EcommercePackage.productmanagement.ProductServices;
 import EcommercePackage.user.Buyer;
 import EcommercePackage.user.User;
+import EcommercePackage.user.Seller;
 import EcommercePackage.user.UserService;
 
 public class userMenuOptionsImplementation {
     private static final UserService userService = new UserService();
     private static final ProductServices productService = new ProductServices();
     private static final Scanner scanner = new Scanner(System.in);
-    private static String loggedInUser = null;
-    private static int loggedInSellerId; 
+    private static String loggedInUsername = null;
+    private static int loggedInId;
+    private static int loggedInRoleId;
+    private static String loggedInEmail;
 
 
     public static void main(String[] args) {
@@ -32,7 +35,7 @@ public class userMenuOptionsImplementation {
             int choice = scanner.nextInt();
             scanner.nextLine(); // Clear the newline character
             String loggedInUser = null;
-            int loggedInSellerId = -1; // Add this to track seller ID
+            loggedInId = -1; // Add this to track seller ID
 
             if (choice == 1) {
                 // Login logic
@@ -41,22 +44,35 @@ public class userMenuOptionsImplementation {
                 System.out.println("\nEnter Password:");
                 String password = scanner.nextLine();
 
-                int[] loginResult = userService.login(username, password);
-                int sellerId = loginResult[0];
-                int userRole = loginResult[1];
+                String[] loginResult = userService.login(username, password);
+                if (loginResult != null && !loginResult[0].equals("null")) {
+                    // Safely parse the userId and userRole as integers
+                    int userId = Integer.parseInt(loginResult[0]); // Parsing userId to an integer
+                    int userRole = Integer.parseInt(loginResult[1]); // Parsing userRole to an integer
+                    String userEmail = loginResult[2]; // Email stays as a String
+                    loggedInId = userId;
+                    loggedInRoleId = userRole;
+                    loggedInEmail = userEmail;
+                    loggedInUsername = username;
+                    // Further logic based on login success
+                    System.out.println("User ID: " + userId);
+                    System.out.println("Role ID: " + userRole);
+                    System.out.println("Email: " + userEmail);
+                } else {
+                    // Handle login failure
+                    System.out.println("Login failed.");
+                }
 
-                if (sellerId != -1) {
-                    loggedInUser = username;
-                    loggedInSellerId = sellerId; // Set the seller ID here
+                if (loggedInId != -1) {
 
-                    switch (userRole) {
+                    switch (loggedInRoleId) {
                         case 1:
                             System.out.println("\nLogin successful. Welcome, " + username);
                             showAdminMenu();
                             break;
                         case 2:
                             System.out.println("\nLogin successful. Welcome, " + username);
-                            showSellerMenu(loggedInSellerId); // Pass seller ID
+                            showSellerMenu(loggedInId); // Pass seller ID
                             break;
                         case 3:
                             System.out.println("\nLogin successful. Welcome, " + username);
@@ -100,7 +116,8 @@ public class userMenuOptionsImplementation {
             System.out.println("1. View all users");
             System.out.println("2. Delete a user");
             System.out.println("3. View all products with Seller info");
-            System.out.println("4. Log out");
+            System.out.println("4. Change a user's role");
+            System.out.println("5. Log out");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -131,15 +148,22 @@ public class userMenuOptionsImplementation {
                         System.out.println("Product Name: " + product.getProductName());
                         System.out.println("Product Price: $" + product.getProductPrice());
                         System.out.println("Product Quantity: " + product.getProductQuantity());
-                        System.out.println("Seller Name: " + product.getSellerName());
-                        System.out.println("Seller Email: " + product.getSellerEmail());
+                        System.out.println("Seller Name: " + loggedInUsername);
+                        System.out.println("Seller Email: " + loggedInEmail);
                         System.out.println("------------------------------------");
                     }
                 }
                 break;
-
                 case 4:
-                    loggedInUser = null; 
+                    System.out.print("\nEnter username you want to change the role for: ");
+                    String usernameTochangeRole = scanner.nextLine();
+                    System.out.print("\nEnter the new role id (1 for ADMIN, 2 for SELLER, and 3 for BUYER)");
+                    int newRoleId = scanner.nextInt();
+                    scanner.nextLine();
+                    userService.changeUserRole(usernameTochangeRole, newRoleId);
+                    break;
+                case 5:
+                    loggedInUsername = null;
                     System.out.println("Logged out successfully.");
                     return; 
 
@@ -150,7 +174,7 @@ public class userMenuOptionsImplementation {
     }
 
     // Seller menu options
-    private static void showSellerMenu(int loggedInSellerId) {
+    private static void showSellerMenu(int loggedInId) {
         while (true) {
             System.out.println("\nSeller Dashboard:");
             System.out.println("1. View my products");
@@ -163,7 +187,7 @@ public class userMenuOptionsImplementation {
             scanner.nextLine();
             switch (choice) {
                 case 1:
-                List<Product> products = productService.viewProductsBySeller(loggedInSellerId);
+                List<Product> products = productService.viewProductsBySeller(loggedInId);
 
                     if (products.isEmpty()) {
                         System.out.println("No products found for your account.");
@@ -184,7 +208,7 @@ public class userMenuOptionsImplementation {
                     int productId = scanner.nextInt();
                     scanner.nextLine();
 
-                    List<Product> sellerProducts = productService.viewProductsBySeller(loggedInSellerId);
+                    List<Product> sellerProducts = productService.viewProductsBySeller(loggedInId);
                     boolean isValidProduct = sellerProducts.stream()
                             .anyMatch(product -> product.getProductId() == productId);
                     
@@ -199,7 +223,7 @@ public class userMenuOptionsImplementation {
                     double newPrice = scanner.nextDouble();
                     System.out.println("\nEnter new product quantity:");
                     int newQuantity = scanner.nextInt();
-                    Product updatedProduct = new Product(productId, newProductName, newPrice, newQuantity, loggedInSellerId, null, null);
+                    Product updatedProduct = new Product(productId, newProductName, newPrice, newQuantity,loggedInId);
                     productService.updateProduct(updatedProduct);
                     break;
                 case 3:
@@ -210,14 +234,14 @@ public class userMenuOptionsImplementation {
                     System.out.println("\nEnter product quantity:");
                     int productQuantity = scanner.nextInt();
                     scanner.nextLine(); // Consume the newline character
-                    Product newProduct = new Product(productName, productPrice, productQuantity, loggedInSellerId, null, null);
+                    Product newProduct = new Product(productName, productPrice, productQuantity, loggedInId);
                     productService.addProduct(newProduct);
                     break;
                 case 4:
                     System.out.println("\nEnter product ID to delete:");
                     int productToDeleteId = scanner.nextInt();
 
-                    boolean isDeleted = productService.deleteProduct(productToDeleteId, loggedInSellerId);
+                    boolean isDeleted = productService.deleteProduct(productToDeleteId, loggedInId);
 
                     if (isDeleted) {
                         System.out.println("\nProduct successfully deleted.");
@@ -227,7 +251,7 @@ public class userMenuOptionsImplementation {
                     }
                     break;
                 case 5:
-                    loggedInUser = null; 
+                    loggedInUsername = null;
                     System.out.println("Logged out successfully.");
                     return; 
 
@@ -267,8 +291,8 @@ public class userMenuOptionsImplementation {
                                            ", Name: " + product.getProductName() +
                                            ", Price: " + product.getProductPrice() +
                                            ", Quantity: " + product.getProductQuantity() +
-                                           ", Seller: " + product.getSellerName() +
-                                           ", Email: " + product.getSellerEmail());
+                                           ", Seller: " + loggedInUsername +
+                                           ", Email: " + loggedInEmail);
                     }
                 }
                 break;
@@ -289,8 +313,8 @@ public class userMenuOptionsImplementation {
                                            ", Name: " + product.getProductName() +
                                            ", Price: " + product.getProductPrice() +
                                            ", Quantity: " + product.getProductQuantity() +
-                                           ", Seller: " + product.getSellerName() +
-                                           ", Email: " + product.getSellerEmail());
+                                           ", Seller: " + loggedInUsername +
+                                           ", Email: " + loggedInEmail);
                     }
                 }
                 break;
@@ -301,7 +325,7 @@ public class userMenuOptionsImplementation {
                 productService.viewProductsBySeller(productID);
                 break;
             case 4:
-                loggedInUser = null;  // Log out the user
+                loggedInUsername = null;  // Log out the user
                 System.out.println("Logged out successfully.");
                 continueSession = false; // End the session loop
                 break;

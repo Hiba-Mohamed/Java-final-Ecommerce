@@ -25,6 +25,14 @@ public abstract class User {
         this.role_id = role_id;
 
     }
+
+    public User(int id, String username, String email, String role, int role_id){
+        this.user_id = id;
+        this.username = username;
+        this.email = email;
+        this.role = role;
+        this.role_id = role_id;
+    }
     public int getUser_id() {
         return user_id;
     }

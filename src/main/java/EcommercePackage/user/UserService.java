@@ -25,38 +25,36 @@ public class UserService {
     //     }
     // }
 
-    public int[] login(String username, String password) {
-        String sql = "SELECT u.user_id, u.password, u.role_id, r.role FROM users u "
-                    + "JOIN roles r ON u.role_id = r.id "
-                    + "WHERE u.username = ?";
-        
+    public String[] login(String username, String password) {
+        String sql = "SELECT u.user_id, u.password, u.role_id, u.email FROM users u "
+                + "WHERE u.username = ?";
+
         try (Connection connection = DatabaseConnection.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
             preparedStatement.setString(1, username);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 String hashedPassword = resultSet.getString("password");  // Retrieve the hashed password
-                int userId = resultSet.getInt("user_id");
-                int roleId = resultSet.getInt("role_id");
-                String role = resultSet.getString("role"); // Role name from the roles table
+                String userId = resultSet.getString("user_id");  // Retrieve user_id as a String
+                int roleId = resultSet.getInt("role_id");  // Retrieve role_id
+                String email = resultSet.getString("email");  // Retrieve email
 
                 // Compare the entered password with the stored hashed password using BCrypt
                 if (BCrypt.checkpw(password, hashedPassword)) {
-                    System.out.println("Role: " + role);  // For debugging
-                    return new int[] { userId, roleId };
+                    return new String[] { userId, String.valueOf(roleId), email };  // Return user_id, role_id, and email
                 } else {
                     System.out.println("Invalid username or password.");
-                    return new int[] { -1, -1 };  // Indicate login failure
+                    return new String[] { "null", "null", "null" };  // Indicate login failure
                 }
             } else {
                 System.out.println("Invalid username or password.");
-                return new int[] { -1, -1 };  // Username not found
+                return new String[] { "null", "null", "null" };  // Username not found
             }
         } catch (SQLException e) {
             System.out.println("Error during login: " + e.getMessage());
-            return new int[] { -1, -1 };  // Indicate login failure due to an error
+            return new String[] { "null", "null", "null" };  // Indicate login failure due to an error
         }
     }
     public void getAllUsers() {

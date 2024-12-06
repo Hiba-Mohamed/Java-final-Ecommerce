@@ -12,6 +12,7 @@ public class UserDAO{
 //1 "ADMIN"
 //2	"SELLER"
 //3	"BUYER"
+
     public static Connection connectToDataBase() throws SQLException {
         return DatabaseConnection.getConnection();
     }
@@ -65,37 +66,38 @@ public class UserDAO{
 
     }
 
-    public int login(String username, String password)  throws SQLException{
-        String selectSql = "SELECT password, role_id FROM users WHERE username = ?";
+    public String[] login(String username, String password) throws SQLException {
+        String selectSql = "SELECT password, role_id, email, user_id FROM users WHERE username = ?";
 
         try (Connection connection = connectToDataBase();
              PreparedStatement selectStmt = connection.prepareStatement(selectSql)) {
 
-            // Retrieve the current hashed password and role_id
+            // Retrieve the current hashed password, role_id, email, and user_id
             selectStmt.setString(1, username);
             ResultSet rs = selectStmt.executeQuery();
 
             if (rs.next()) {
                 String currentHashedPassword = rs.getString("password");
+                String userId = rs.getString("user_id"); // user_id as a string
                 int roleId = rs.getInt("role_id");
+                String email = rs.getString("email");
 
                 // Compare the provided password with the hashed password
                 if (!BCrypt.checkpw(password, currentHashedPassword)) {
-                    return 0; // Login failed, return 0 (or other failure indicator)
+                    return null; // Login failed, return null (or other failure indicator)
                 }
 
-                // Login successful
-                return roleId;
+                // Login successful, return userId, roleId, and email
+                return new String[]{userId, String.valueOf(roleId), email};
 
             } else {
-                return 0; // Username not found, return 0
+                return null; // Username not found, return null
             }
         } catch (SQLException e) {
             System.out.println("Error while logging in: " + e.getMessage());
-            return 0; // Return 0 if an exception occurs
+            return null; // Return null if an exception occurs
         }
     }
-
 
     public void addUser(User user) throws SQLException {
         String sql = "INSERT INTO users (username, email, password, role_id) VALUES (?, ?, ?, ?)";

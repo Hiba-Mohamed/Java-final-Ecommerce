@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import EcommercePackage.database.DatabaseConnection;
+import EcommercePackage.user.Seller;
 
 public class ProductDAO {
 
@@ -21,27 +22,40 @@ public class ProductDAO {
         List<Product> products = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement pstmt = connection.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
 
-            // Process the results
             while (rs.next()) {
+                // Fetch product details
                 int product_id = rs.getInt("product_id");
                 String productName = rs.getString("productName");
                 double productPrice = rs.getDouble("productPrice");
                 int productQuantity = rs.getInt("productQuantity");
                 int productSellerId = rs.getInt("productSellerId");
-                String sellerName = rs.getString("sellerName");
-                String sellerEmail = rs.getString("sellerEmail");
 
-                // Add product to the list
-                Product product = new Product(product_id, productName, productPrice, productQuantity, productSellerId,
-                        sellerName, sellerEmail);
-                products.add(product);
+                // Fetch seller details
+                String sellerQuery = "SELECT user_id, username, email FROM users WHERE user_id = ? AND role_id = 2";
+                try (PreparedStatement sellerStmt = connection.prepareStatement(sellerQuery)) {
+                    sellerStmt.setInt(1, productSellerId);
+                    try (ResultSet sellerRs = sellerStmt.executeQuery()) {
+                        if (sellerRs.next()) {
+                            // Create Seller object
+                            int sellerId = sellerRs.getInt("user_id");
+                            String sellerName = sellerRs.getString("username");
+                            String sellerEmail = sellerRs.getString("email");
+
+
+                            // Create Product object with Seller
+                            Product product = new Product(product_id, productName, productPrice, productQuantity, sellerId);
+                            products.add(product);
+                        }
+                    }
+                }
             }
 
         } catch (SQLException e) {
             System.out.println("Error while fetching products: " + e.getMessage());
+            throw e;
         }
 
         return products;
@@ -50,29 +64,42 @@ public class ProductDAO {
     // Get all products by seller id
     public List<Product> viewProductsBySeller(int sellerId) throws SQLException {
         List<Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM products WHERE productSellerId = ?";
+        String sql = "SELECT * FROM products WHERE productSellerId = ?"; // Query to get products
+        String sqlUser = "SELECT username, email FROM users WHERE user_id = ?"; // Query to get seller info
 
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setInt(1, sellerId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-
                     int productId = resultSet.getInt("product_id");
                     String productName = resultSet.getString("productName");
                     double productPrice = resultSet.getDouble("productPrice");
                     int productQuantity = resultSet.getInt("productQuantity");
                     int productSellerId = resultSet.getInt("productSellerId");
-                    String sellerName = resultSet.getString("sellerName");
-                    String sellerEmail = resultSet.getString("sellerEmail");
 
-                    // Create a Product object and add it to the list
-                    Product product = new Product(productId, productName, productPrice, productQuantity,
-                            productSellerId,
-                            sellerName, sellerEmail);
-                    products.add(product);
+                    // Fetch the seller details using the sellerId
+                    Seller seller = null;
+                    try (PreparedStatement sellerStmt = connection.prepareStatement(sqlUser)) {
+                        sellerStmt.setInt(1, productSellerId);
+                        try (ResultSet sellerRs = sellerStmt.executeQuery()) {
+                            if (sellerRs.next()) {
+                                String sellerName = sellerRs.getString("username");
+                                String sellerEmail = sellerRs.getString("email");
+
+                                // Create the Seller object
+                                seller = new Seller(productSellerId, sellerName, sellerEmail);
+                            }
+                        }
+                    }
+
+                    // Create the Product object and add it to the list
+                    if (seller != null) {
+                        Product product = new Product(productId, productName, productPrice, productQuantity, sellerId);
+                        products.add(product);
+                    }
                 }
             }
 
@@ -82,7 +109,6 @@ public class ProductDAO {
 
         return products;
     }
-
     // Get all products by product name
     public List<Product> viewProductsByName(String productName) throws SQLException {
         List<Product> products = new ArrayList<>();
@@ -100,13 +126,10 @@ public class ProductDAO {
                     String productName1 = resultSet.getString("productName");
                     double productPrice = resultSet.getDouble("productPrice");
                     int productQuantity = resultSet.getInt("productQuantity");
-                    int productSellerId = resultSet.getInt("productSellerId");
-                    String sellerName = resultSet.getString("sellerName"); // Fetch sellerName
-                    String sellerEmail = resultSet.getString("sellerEmail"); // Fetch sellerEmail
+                    int sellerId = resultSet.getInt("productsellerid"); //
 
                     // Create a Product object and add it to the list
-                    Product product = new Product(productId, productName1, productPrice, productQuantity,
-                            productSellerId, sellerName, sellerEmail);
+                    Product product = new Product(productId, productName1, productPrice, productQuantity, sellerId);
                     products.add(product);
                 }
             }
@@ -120,20 +143,16 @@ public class ProductDAO {
 
     // Add a new product
     public void addProduct(Product product) throws SQLException {
-        String sql = "INSERT INTO products (productName, productPrice, productQuantity, productSellerId, sellerName, sellerEmail) " +
-                    "VALUES (?, ?, ?, ?, " +
-                    "(SELECT username FROM users WHERE user_id = ?), " +
-                    "(SELECT email FROM users WHERE user_id = ?))";
+        String sql = "INSERT INTO products (productName, productPrice, productQuantity, productSellerId) " +
+                "VALUES (?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, product.getProductName());
             preparedStatement.setDouble(2, product.getProductPrice());
             preparedStatement.setInt(3, product.getProductQuantity());
             preparedStatement.setInt(4, product.getProductSellerId());
-            preparedStatement.setInt(5, product.getProductSellerId()); 
-            preparedStatement.setInt(6, product.getProductSellerId()); 
 
             int rowsAffected = preparedStatement.executeUpdate();
 

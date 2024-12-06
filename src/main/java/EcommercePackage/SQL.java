@@ -112,48 +112,42 @@ public class SQL {
 
     private static String generateInsertProductsSql(Connection connection) throws SQLException {
         String[][] sampleProducts = {
-                { "Apple iPhone 14", "999.99", "100", "mark_smith" },
-                { "Samsung Galaxy S21", "799.99", "150", "lucas_white" },
-                { "Sony WH-1000XM4", "349.99", "200", "olivia_green" },
-                { "Apple MacBook Air", "1299.99", "50", "sophia_grey" },
-                { "Dell XPS 13", "1099.99", "75", "mark_smith" },
-                { "Bose SoundLink Speaker", "249.99", "120", "mark_smith" },
-                { "HP Spectre x360", "1399.99", "40", "sophia_grey" },
-                { "Google Pixel 7", "599.99", "100", "mark_smith" },
-                { "Canon EOS R10", "1099.00", "30", "lucas_white" },
-                { "Microsoft Surface Pro 9", "999.00", "60", "olivia_green" }
+                { "Apple iPhone 14", "999.99", "100", "3" },
+                { "Samsung Galaxy S21", "799.99", "150", "5" },
+                { "Sony WH-1000XM4", "349.99", "200", "7" },
+                { "Apple MacBook Air", "1299.99", "50", "9" },
+                { "Dell XPS 13", "1099.99", "75", "3" },
+                { "Bose SoundLink Speaker", "249.99", "120", "3" },
+                { "HP Spectre x360", "1399.99", "40", "9" },
+                { "Google Pixel 7", "599.99", "100", "3" },
+                { "Canon EOS R10", "1099.00", "30", "5" },
+                { "Microsoft Surface Pro 9", "999.00", "60", "7" }
         };
 
         StringBuilder sqlBuilder = new StringBuilder(
-                "INSERT INTO products (productName, productPrice, productQuantity, productSellerId, sellerName, sellerEmail) VALUES ");
+                "INSERT INTO products (productName, productPrice, productQuantity, productSellerId) VALUES ");
 
         for (int i = 0; i < sampleProducts.length; i++) {
             String name = sampleProducts[i][0];
             String price = sampleProducts[i][1];
             String quantity = sampleProducts[i][2];
-            String sellerName = sampleProducts[i][3];
+            int sellerId = Integer.parseInt(sampleProducts[i][3]);
 
-            int sellerId = getSellerIdByName(connection, sellerName);
-            if (sellerId == -1) {
-            System.out.println("Seller not found: " + sellerName);
-            continue;
-        }
-
-            
+            // Ensure correct sellerId
             String sellerEmail = getSellerEmailById(connection, sellerId);
-        
-            sqlBuilder.append(String.format("('%s', %s, %s, %s, '%s', '%s')",
-                name, price, quantity, sellerId, sellerName, sellerEmail));
+
+            // Add product values
+            sqlBuilder.append(String.format("('%s', %s, %s, %s)",
+                    name, price, quantity, sellerId));
 
             // Add a comma unless it's the last product
             if (i < sampleProducts.length - 1) {
                 sqlBuilder.append(", ");
-            } else {
-                sqlBuilder.append(";");
             }
         }
 
-        return sqlBuilder.toString();
+        // Return the generated SQL query string
+        return sqlBuilder.toString() + ";";
     }
 
     private static int getSellerIdByName(Connection connection, String sellerName) throws SQLException {
@@ -200,10 +194,9 @@ public class SQL {
                 "    productName VARCHAR(100) NOT NULL," +
                 "    productPrice DECIMAL(10, 2) NOT NULL," +
                 "    productQuantity INT NOT NULL," +
-                "    productSellerId INT," +
-                "    sellerName VARCHAR(50)," +
-                "    sellerEmail VARCHAR(100)," +
-                "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                "    productSellerId INT NOT NULL," +
+                "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                "    FOREIGN KEY (productSellerId) REFERENCES users(user_id)" +
                 ");";
 
         try (Statement statement = connection.createStatement()) {
