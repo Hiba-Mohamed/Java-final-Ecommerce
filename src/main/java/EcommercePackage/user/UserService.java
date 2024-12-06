@@ -118,10 +118,9 @@ public class UserService {
         }
         try {
             userDAO.changeUserRole(username, newRoleId);
-            System.out.println("User password updated successfully!");
             return true;
         } catch (SQLException e) {
-            System.out.println("Error updating user password: " + e.getMessage());
+            System.out.println("Error updating user's role: " + e.getMessage());
             return false;
         }
     }

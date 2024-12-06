@@ -6,7 +6,6 @@ import EcommercePackage.productmanagement.Product;
 import EcommercePackage.productmanagement.ProductServices;
 import EcommercePackage.user.Buyer;
 import EcommercePackage.user.User;
-import EcommercePackage.user.Seller;
 import EcommercePackage.user.UserService;
 
 public class userMenuOptionsImplementation {
@@ -129,6 +128,9 @@ public class userMenuOptionsImplementation {
                     break;
 
                 case 2:
+                    System.out.print("\n___________________________________________________________________________");
+                    System.out.print("\n|  Attention !!!! deleting a user, deletes they associated products also  |");
+                    System.out.print("\n___________________________________________________________________________");
                     System.out.print("\nEnter username to delete: ");
                     String usernameToDelete = scanner.nextLine();
                     userService.removeUser(usernameToDelete);
@@ -271,8 +273,7 @@ public class userMenuOptionsImplementation {
         System.out.println("\nBuyer Dashboard:");
         System.out.println("1. Browse products");
         System.out.println("2. Search for a product by its name");
-        System.out.println("3. View product details");
-        System.out.println("4. Log out");
+        System.out.println("3. Log out");
         System.out.print("Enter your choice: ");
         int choice = scanner.nextInt();
         scanner.nextLine(); // Consume the newline character after nextInt()
@@ -320,11 +321,6 @@ public class userMenuOptionsImplementation {
                 break;
 
             case 3:
-                System.out.println("Enter product Id, to view product details:");
-                int productID = scanner.nextInt();
-                productService.viewProductsBySeller(productID);
-                break;
-            case 4:
                 loggedInUsername = null;  // Log out the user
                 System.out.println("Logged out successfully.");
                 continueSession = false; // End the session loop

@@ -56,7 +56,6 @@ public class UserDAO{
                 System.out.println("User ID: " + userId);
                 System.out.println("Username: " + username);
                 System.out.println("Email: " + email);
-                System.out.println("Password: " + password);
                 System.out.println("------------------------------------");
             }
 
@@ -143,7 +142,7 @@ public class UserDAO{
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("\nUser removed successfully!");
+                System.out.println("\nUser and their associated products removed successfully!");
             } else {
                 System.out.println("\nNo user found with the username '" + username + "'.");
             }

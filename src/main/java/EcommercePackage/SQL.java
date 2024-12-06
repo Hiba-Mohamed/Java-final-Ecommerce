@@ -176,28 +176,28 @@ public class SQL {
 
     private static void executeSqlQueries(Connection connection) throws SQLException {
         // Define the SQL queries as a string
-        String sql = "CREATE TABLE IF NOT EXISTS roles (" +
-                "    id SERIAL PRIMARY KEY," +
-                "    role TEXT NOT NULL UNIQUE" +
-                ");" +
-                "CREATE TABLE IF NOT EXISTS users (" +
-                "    user_id SERIAL PRIMARY KEY," +
-                "    username VARCHAR(50) NOT NULL UNIQUE," +
-                "    email VARCHAR(100) NOT NULL UNIQUE," +
-                "    password TEXT NOT NULL," +
-                "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
-                "    role_id INT," +
-                "    FOREIGN KEY (role_id) REFERENCES roles(id)" +
-                ");" +
-                "CREATE TABLE IF NOT EXISTS products (" +
-                "    product_id SERIAL PRIMARY KEY," +
-                "    productName VARCHAR(100) NOT NULL," +
-                "    productPrice DECIMAL(10, 2) NOT NULL," +
-                "    productQuantity INT NOT NULL," +
-                "    productSellerId INT NOT NULL," +
-                "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
-                "    FOREIGN KEY (productSellerId) REFERENCES users(user_id)" +
-                ");";
+       String sql = "CREATE TABLE IF NOT EXISTS roles (" +
+        "    id SERIAL PRIMARY KEY," +
+        "    role TEXT NOT NULL UNIQUE" +
+        ");" +
+        "CREATE TABLE IF NOT EXISTS users (" +
+        "    user_id SERIAL PRIMARY KEY," +
+        "    username VARCHAR(50) NOT NULL UNIQUE," +
+        "    email VARCHAR(100) NOT NULL UNIQUE," +
+        "    password TEXT NOT NULL," +
+        "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+        "    role_id INT," +
+        "    FOREIGN KEY (role_id) REFERENCES roles(id)" +
+        ");" +
+        "CREATE TABLE IF NOT EXISTS products (" +
+        "    product_id SERIAL PRIMARY KEY," +
+        "    productName VARCHAR(100) NOT NULL," +
+        "    productPrice DECIMAL(10, 2) NOT NULL," +
+        "    productQuantity INT NOT NULL," +
+        "    productSellerId INT NOT NULL," +
+        "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+        "    FOREIGN KEY (productSellerId) REFERENCES users(user_id) ON DELETE CASCADE" + // <-- Change here
+        ");";
 
         try (Statement statement = connection.createStatement()) {
             // Execute the SQL queries
