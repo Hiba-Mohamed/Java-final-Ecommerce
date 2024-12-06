@@ -146,39 +146,6 @@ public class ProductDAO {
     }
 
     // Update a product
-    // public boolean updateProduct(Product product) throws SQLException {
-    //     String sql = "UPDATE products SET productName = ?, productPrice = ?, productQuantity = ?, productSellerID = ?, sellerName = ?, sellerEmail = ?, where product_id = ?";
-
-    //     try (Connection connection = DatabaseConnection.getConnection();
-    //             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-
-    //         preparedStatement.setString(1, product.getProductName());
-    //         preparedStatement.setDouble(2, product.getProductPrice());
-    //         preparedStatement.setInt(3, product.getProductQuantity());
-    //         preparedStatement.setInt(4, product.getProductSellerId());
-    //         preparedStatement.setString(5, product.getSellerName());
-    //         preparedStatement.setString(6, product.getSellerEmail());
-    //         preparedStatement.setInt(7, product.getProductId());
-
-    //         int rowsAffected = preparedStatement.executeUpdate();
-
-    //         if (rowsAffected > 0) {
-    //             System.out.println("----------------------------");
-    //             System.out.println("'" + product + "' is updated successfully.");
-    //             System.out.println("----------------------------");
-    //             return true;
-    //         } else {
-    //             System.out.println("----------------------------");
-    //             System.out.println("No product found with the given ID.");
-    //             System.out.println("----------------------------");
-    //             return false;
-    //         }
-    //     } catch (SQLException error) {
-    //         System.out.println("Error updating product: " + error.getMessage());
-    //         throw error;
-    //     }
-    // }
-
     public boolean updateProduct(Product product) throws SQLException {
         String validateSql = "SELECT productSellerId FROM products WHERE product_id = ?";
         String updateSql = "UPDATE products SET productName = ?, productPrice = ?, productQuantity = ? WHERE product_id = ?";
@@ -211,47 +178,41 @@ public class ProductDAO {
         }
     }
 
-    // Delete a product
+    // Deleet a product
     public boolean deleteProduct(int productId, int sellerId) throws SQLException {
+        String checkSellerSql = "SELECT productSellerId FROM products WHERE product_id = ?";
         String deleteSql = "DELETE FROM products WHERE product_id = ? AND productSellerId = ?";
 
-        String checkSellerSql = "SELECT productSellerId FROM products WHERE product_id = ?";
-
         try (Connection connection = DatabaseConnection.getConnection()) {
-            // protect other sellers products from being deleted
+            // Step 1: Validate ownership of the product
             try (PreparedStatement checkStatement = connection.prepareStatement(checkSellerSql)) {
                 checkStatement.setInt(1, productId);
-                ResultSet resultSet = checkStatement.executeQuery();
-                if (resultSet.next()) {
-                    int actualProductSellerId = resultSet.getInt("productSellerId");
-                    if (actualProductSellerId != sellerId) {
-                        System.out.println("You are not authorized to delete this product.");
-                        return false;
+
+                try (ResultSet resultSet = checkStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        int actualProductSellerId = resultSet.getInt("productSellerId");
+
+                        if (actualProductSellerId != sellerId) {
+                            return false; 
+                        }
+                    } else {
+                        return false; 
                     }
-                } else {
-                    System.out.println("Product not found.");
-                    return false;
                 }
             }
 
-            // if all good, delete the product
+            // Step 2: Proceed to delete the product
             try (PreparedStatement deleteStatement = connection.prepareStatement(deleteSql)) {
                 deleteStatement.setInt(1, productId);
                 deleteStatement.setInt(2, sellerId);
 
                 int rowsAffected = deleteStatement.executeUpdate();
-                if (rowsAffected > 0) {
-                    System.out.println("Product deleted successfully.");
-                    return true;
-                } else {
-                    System.out.println("No product found with the given ID for your account.");
-                    return false;
-                }
+                return rowsAffected > 0; 
             }
         } catch (SQLException e) {
             System.out.println("Error deleting product: " + e.getMessage());
-            throw e; // Re-throwing to handle it higher up
+            throw e; 
         }
     }
-
 }
+
