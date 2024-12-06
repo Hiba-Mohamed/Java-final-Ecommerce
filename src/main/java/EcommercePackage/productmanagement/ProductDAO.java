@@ -146,32 +146,64 @@ public class ProductDAO {
     }
 
     // Update a product
+    // public boolean updateProduct(Product product) throws SQLException {
+    //     String sql = "UPDATE products SET productName = ?, productPrice = ?, productQuantity = ?, productSellerID = ?, sellerName = ?, sellerEmail = ?, where product_id = ?";
+
+    //     try (Connection connection = DatabaseConnection.getConnection();
+    //             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+    //         preparedStatement.setString(1, product.getProductName());
+    //         preparedStatement.setDouble(2, product.getProductPrice());
+    //         preparedStatement.setInt(3, product.getProductQuantity());
+    //         preparedStatement.setInt(4, product.getProductSellerId());
+    //         preparedStatement.setString(5, product.getSellerName());
+    //         preparedStatement.setString(6, product.getSellerEmail());
+    //         preparedStatement.setInt(7, product.getProductId());
+
+    //         int rowsAffected = preparedStatement.executeUpdate();
+
+    //         if (rowsAffected > 0) {
+    //             System.out.println("----------------------------");
+    //             System.out.println("'" + product + "' is updated successfully.");
+    //             System.out.println("----------------------------");
+    //             return true;
+    //         } else {
+    //             System.out.println("----------------------------");
+    //             System.out.println("No product found with the given ID.");
+    //             System.out.println("----------------------------");
+    //             return false;
+    //         }
+    //     } catch (SQLException error) {
+    //         System.out.println("Error updating product: " + error.getMessage());
+    //         throw error;
+    //     }
+    // }
+
     public boolean updateProduct(Product product) throws SQLException {
-        String sql = "UPDATE products SET productName = ?, productPrice = ?, productQuantity = ?, productSellerID = ?, sellerName = ?, sellerEmail = ?, where product_id = ?";
+        String validateSql = "SELECT productSellerId FROM products WHERE product_id = ?";
+        String updateSql = "UPDATE products SET productName = ?, productPrice = ?, productQuantity = ? WHERE product_id = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            // Step 1: Validate ownership of the product
+            try (PreparedStatement validateStmt = connection.prepareStatement(validateSql)) {
+                validateStmt.setInt(1, product.getProductId());
+            }
+            // Step 2: Proceed with the update if validation passes
+            try (PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
+                updateStmt.setString(1, product.getProductName());
+                updateStmt.setDouble(2, product.getProductPrice());
+                updateStmt.setInt(3, product.getProductQuantity());
+                updateStmt.setInt(4, product.getProductId());
 
-            preparedStatement.setString(1, product.getProductName());
-            preparedStatement.setDouble(2, product.getProductPrice());
-            preparedStatement.setInt(3, product.getProductQuantity());
-            preparedStatement.setInt(4, product.getProductSellerId());
-            preparedStatement.setString(5, product.getSellerName());
-            preparedStatement.setString(6, product.getSellerEmail());
-            preparedStatement.setInt(7, product.getProductId());
+                int rowsAffected = updateStmt.executeUpdate();
 
-            int rowsAffected = preparedStatement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("----------------------------");
-                System.out.println("'" + product + "' is updated successfully.");
-                System.out.println("----------------------------");
-                return true;
-            } else {
-                System.out.println("----------------------------");
-                System.out.println("No product found with the given ID.");
-                System.out.println("----------------------------");
-                return false;
+                if (rowsAffected > 0) {
+                    System.out.println("\nProduct updated successfully.");
+                    return true;
+                } else {
+                    System.out.println("\nFailed to update product.");
+                    return false;
+                }
             }
         } catch (SQLException error) {
             System.out.println("Error updating product: " + error.getMessage());
@@ -221,6 +253,5 @@ public class ProductDAO {
             throw e; // Re-throwing to handle it higher up
         }
     }
-
 
 }
