@@ -1,83 +1,101 @@
 package EcommercePackage.productmanagement;
 
-import java.sql.Timestamp;
-
 public class Product {
-  // Attributes
+    // Attributes
     private int product_id;
-    private String name;
-    private double price;
-    private int quantity;
-    private int sellerId;
-    private Timestamp createdAt;
+    private String productName;
+    private double productPrice;
+    private int productQuantity;
+    private int productSellerId;
+    private String sellerName;
+    private String sellerEmail;
 
-    // Constructor
-    public Product(int product_id, String name, double price, int quantity, int sellerId, Timestamp createdAt) {
+    // Constructors
+    public Product(int product_id, String productName, double productPrice, int productQuantity, int productSellerId, String sellerName, String sellerEmail) {
         this.product_id = product_id;
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-        this.sellerId = sellerId;
-        this.createdAt = createdAt;
+        this.productName = productName;
+        this.productPrice = productPrice;
+        this.productQuantity = productQuantity;
+        this.productSellerId = productSellerId;
+        this.sellerName = sellerName;
+        this.sellerEmail = sellerEmail;
+    }
+
+    public Product(String productName, double productPrice, int productQuantity, int productSellerId, String sellerName, String sellerEmail) {
+        this.productName = productName;
+        this.productPrice = productPrice;
+        this.productQuantity = productQuantity;
+        this.productSellerId = productSellerId;
+        this.sellerName = sellerName;
+        this.sellerEmail = sellerEmail;
     }
 
     // Getters and Setters
-    public int getId() {
-        return this.product_id;
+    public int getProductId() {
+        return product_id;
     }
 
-    public void setId(int product_id) {
+    public void setProductId(int product_id) {
         this.product_id = product_id;
     }
 
-    public String getName() {
-        return this.name;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setName(String product_name) {
-        this.name = product_name;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public double getPrice() {
-        return this.price;
+    public double getProductPrice() {
+        return productPrice;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setProductPrice(double productPrice) {
+        this.productPrice = productPrice;
     }
 
-    public int getQuantity() {
-        return this.quantity;
+    public int getProductQuantity() {
+        return productQuantity;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setProductQuantity(int productQuantity) {
+        this.productQuantity = productQuantity;
     }
 
-    public int getSellerId() {
-        return this.sellerId;
+    public int getProductSellerId() {
+        return productSellerId;
     }
 
-    public void setSellerId(int sellerId) {
-        this.sellerId = sellerId;
+    public void setProductSellerId(int productSellerId) {
+        this.productSellerId = productSellerId;
     }
 
-    public Timestamp getCreatedAt() {
-        return this.createdAt;
+    public String getSellerName() {
+        return sellerName;
     }
-    
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+
+    public void setSellerName(String sellerName) {
+        this.sellerName = sellerName;
+    }
+
+    public String getSellerEmail() {
+        return sellerEmail;
+    }
+
+    public void setSellerEmail(String sellerEmail) {
+        this.sellerEmail = sellerEmail;
     }
 
     // Utility methods
-    public void updateStock(int newQuantity) {
-        this.quantity = newQuantity;
+    public void updateProductStock(int newProductQuantity) {
+        this.productQuantity = newProductQuantity;
     }
 
     @Override
     public String toString() {
-        return "Product [ID=" + this.product_id + ", Name=" + this.name + ", Price=" + this.price +
-               ", Quantity=" + this.quantity + ", Seller ID=" + this.sellerId + "CREATED AT=" + this.createdAt + "]";
+        return "Product [ID=" + product_id + ", Name=" + productName + ", Price=" + productPrice +
+               ", Quantity=" + productQuantity + ", Seller ID=" + productSellerId +
+               ", Seller Name=" + sellerName + ", Seller Email=" + sellerEmail + "]";
     }
 }

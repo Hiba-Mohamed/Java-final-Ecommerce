@@ -5,23 +5,25 @@ public abstract class User {
     private String username;
     private String email;
     private String password;
-    private Role role;
+    private String role;
+    private int role_id;
 
-    public enum Role {
-        BUYER, SELLER, ADMIN
-    }
 
-    public User(int id, String username, String email, String password, Role role){
+    public User(int id, String username, String email, String password, String role, int role_id){
         this.user_id = id;
         this.username = username;
         this.email = email;
         this.password = BCrypt.hashpw(password, BCrypt.gensalt());
         this.role = role;
+        this.role_id = role_id;
     }
-    public User(String username, String email, String password) {
+    public User(String username, String email, String password, String role, int role_id) {
         this.username = username;
         this.email = email;
         this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        this.role = role;
+        this.role_id = role_id;
+
     }
     public int getUser_id() {
         return user_id;
@@ -55,11 +57,16 @@ public abstract class User {
         this.password = BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
-    public Role getRole(){
-        return this.role;
+    public String getRoleDescription(){
+        return "Role ID: " + this.role_id + ", Role Name: " + this.role;
     }
 
-    public void setRole(Role role){
+    public int getRoleId(){
+        return this.role_id;
+    }
+
+    public void setRole(int role_id, String role){
         this.role= role;
+        this.role_id = role_id;
     }
 }
