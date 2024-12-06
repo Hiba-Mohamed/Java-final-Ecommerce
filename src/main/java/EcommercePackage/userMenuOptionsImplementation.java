@@ -209,7 +209,6 @@ public class userMenuOptionsImplementation {
                     double productPrice = scanner.nextDouble();
                     System.out.println("\nEnter product quantity:");
                     int productQuantity = scanner.nextInt();
-                    scanner.nextLine(); // Consume the newline character
 
                     Product newProduct = new Product(productName, productPrice, productQuantity, loggedInSellerId, null, null);
                     productService.addProduct(newProduct);
@@ -217,20 +216,21 @@ public class userMenuOptionsImplementation {
                 case 4:
                     System.out.println("\nEnter product ID to delete:");
                     int productToDeleteId = scanner.nextInt();
+
                     boolean isDeleted = productService.deleteProduct(productToDeleteId, loggedInSellerId);
+
                     if (isDeleted) {
-                        System.out.println("Product successfully deleted.");
+                        System.out.println("\nProduct successfully deleted.");
                     } else {
-                        System.out.println("Failed to delete the product. Ensure the product ID is correct.");
+                        System.out.println("\nFailed to delete the product. Ensure the product ID is correct and you own the product.");
                     }
-                    break;
                 case 5:
-                    loggedInUser = null;
-                    System.out.println("Logged out successfully.");
-                    break;
-                default:
-                    System.out.println("Invalid option, please try again.");
-                    break;
+                //     loggedInUser = null;
+                //     System.out.println("Logged out successfully.");
+                //     break;
+                // default:
+                //     System.out.println("Invalid option, please try again.");
+                //     break;
             }
         }
 
