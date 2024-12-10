@@ -71,15 +71,20 @@ public class UserService {
             return false;
         }
 
+        // Check if the username or email already exists
+        if (userDAO.doesUserExist(user.getUsername(), user.getEmail())) {
+            return false;  // Stop the registration process
+        }
+
         try {
-            userDAO.addUser(user);
-            System.out.println("User added!");
-            return true;
+            userDAO.addUser(user); // Attempt to add the user to the database
+            return true;  // Registration successful
         } catch (SQLException e) {
             System.out.println("Error adding user: " + e.getMessage());
             return false;
         }
     }
+    
 
     public boolean removeUser(String username) {
         if (username == null) {

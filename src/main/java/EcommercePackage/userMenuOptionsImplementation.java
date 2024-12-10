@@ -88,16 +88,21 @@ public class userMenuOptionsImplementation {
                 // Registration
                 System.out.println("\nEnter username:");
                 String username = scanner.nextLine();
-                System.out.println("\nEnter Password:");
-                String password = scanner.nextLine();
                 System.out.println("\nEnter email:");
                 String email = scanner.nextLine();
+                System.out.println("\nEnter Password:");
+                String password = scanner.nextLine();
 
+                // Create a new user object
                 User newUserByDefaultIsBuyer = new Buyer(username, email, password); // Default role set as Buyer
-                userService.addUser(newUserByDefaultIsBuyer);
-                System.out.println("\nRegistration successful. Welcome, " + username);
-                loggedInUser = username;
-                showBuyerMenu();
+
+                // Call the UserService's addUser method
+                if (userService.addUser(newUserByDefaultIsBuyer)) {
+                    loggedInUser = username;
+                    showBuyerMenu();  // Only proceed to buyer's dashboard if user was successfully added
+                } else {
+                    System.out.println("The username or email is already in use. Please try with a different one.");
+                }
             } else if (choice == 3) {
                 // Quit logic
                 System.out.println("Thank you for using the system. Goodbye!");
@@ -128,9 +133,7 @@ public class userMenuOptionsImplementation {
                     break;
 
                 case 2:
-                    System.out.print("\n___________________________________________________________________________");
-                    System.out.print("\n|  Attention !!!! deleting a user, deletes they associated products also  |");
-                    System.out.print("\n___________________________________________________________________________");
+                    System.out.print("\nAttention !!!! deleting a user, deletes their associated products also");
                     System.out.print("\nEnter username to delete: ");
                     String usernameToDelete = scanner.nextLine();
                     userService.removeUser(usernameToDelete);
