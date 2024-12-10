@@ -18,12 +18,12 @@ public class ProductDAO {
 
     // Get all products
     public List<Product> getAllProducts() throws SQLException {
-        String sql = "SELECT * FROM products"; // SQL query to fetch all products
-        List<Product> products = new ArrayList<>();
+    String sql = "SELECT * FROM products"; // SQL query to fetch all products
+    List<Product> products = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
                 // Fetch product details
@@ -34,6 +34,7 @@ public class ProductDAO {
                 int productSellerId = rs.getInt("productSellerId");
 
                 // Fetch seller details
+                Seller seller = null;
                 String sellerQuery = "SELECT user_id, username, email FROM users WHERE user_id = ? AND role_id = 2";
                 try (PreparedStatement sellerStmt = connection.prepareStatement(sellerQuery)) {
                     sellerStmt.setInt(1, productSellerId);
@@ -44,12 +45,15 @@ public class ProductDAO {
                             String sellerName = sellerRs.getString("username");
                             String sellerEmail = sellerRs.getString("email");
 
-
-                            // Create Product object with Seller
-                            Product product = new Product(product_id, productName, productPrice, productQuantity, sellerId);
-                            products.add(product);
+                            seller = new Seller(sellerId, sellerName, sellerEmail); // Create the Seller object
                         }
                     }
+                }
+
+                // Create Product object with Seller
+                if (seller != null) {
+                    Product product = new Product(product_id, productName, productPrice, productQuantity, seller);
+                    products.add(product);
                 }
             }
 
@@ -59,7 +63,8 @@ public class ProductDAO {
         }
 
         return products;
-    }
+}
+
 
     // Get all products by seller id
     public List<Product> viewProductsBySeller(int sellerId) throws SQLException {
@@ -97,7 +102,8 @@ public class ProductDAO {
 
                     // Create the Product object and add it to the list
                     if (seller != null) {
-                        Product product = new Product(productId, productName, productPrice, productQuantity, sellerId);
+                        Product product = new Product(productId, productName, productPrice, productQuantity, seller);
+                        product.setSeller(seller);
                         products.add(product);
                     }
                 }
@@ -115,31 +121,49 @@ public class ProductDAO {
         String sql = "SELECT * FROM products WHERE LOWER(productName) = LOWER(?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, productName.toLowerCase());
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-
+                    // Fetch product details
                     int productId = resultSet.getInt("product_id");
                     String productName1 = resultSet.getString("productName");
                     double productPrice = resultSet.getDouble("productPrice");
                     int productQuantity = resultSet.getInt("productQuantity");
-                    int sellerId = resultSet.getInt("productsellerid"); //
+                    int sellerId = resultSet.getInt("productsellerid");
 
-                    // Create a Product object and add it to the list
-                    Product product = new Product(productId, productName1, productPrice, productQuantity, sellerId);
-                    products.add(product);
+                    // Fetch seller details
+                    Seller seller = null;
+                    String sellerQuery = "SELECT user_id, username, email FROM users WHERE user_id = ? AND role_id = 2";
+                    try (PreparedStatement sellerStmt = connection.prepareStatement(sellerQuery)) {
+                        sellerStmt.setInt(1, sellerId);
+                        try (ResultSet sellerRs = sellerStmt.executeQuery()) {
+                            if (sellerRs.next()) {
+                                String sellerName = sellerRs.getString("username");
+                                String sellerEmail = sellerRs.getString("email");
+                                seller = new Seller(sellerId, sellerName, sellerEmail);
+                            }
+                        }
+                    }
+
+                    // Create Product object with Seller
+                    if (seller != null) {
+                        Product product = new Product(productId, productName1, productPrice, productQuantity, seller);
+                        products.add(product);
+                    }
                 }
             }
 
         } catch (SQLException e) {
             System.out.println("Error fetching products by product name: " + e.getMessage());
+            throw e;
         }
 
         return products;
     }
+
 
     // Add a new product
     public void addProduct(Product product) throws SQLException {

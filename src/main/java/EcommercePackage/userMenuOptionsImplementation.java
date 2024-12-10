@@ -5,6 +5,7 @@ import java.util.Scanner;
 import EcommercePackage.productmanagement.Product;
 import EcommercePackage.productmanagement.ProductServices;
 import EcommercePackage.user.Buyer;
+import EcommercePackage.user.Seller;
 import EcommercePackage.user.User;
 import EcommercePackage.user.UserService;
 
@@ -59,7 +60,7 @@ public class userMenuOptionsImplementation {
                     System.out.println("Email: " + userEmail);
                 } else {
                     // Handle login failure
-                    System.out.println("Login failed.");
+                    System.out.println("");
                 }
 
                 if (loggedInId != -1) {
@@ -147,14 +148,16 @@ public class userMenuOptionsImplementation {
                 if (products.isEmpty()) {
                     System.out.println("No products found for the given Seller ID.");
                 } else {
-                    // Display each product with seller information
                     for (Product product : products) {
                         System.out.println("\nProduct ID: " + product.getProductId());
                         System.out.println("Product Name: " + product.getProductName());
                         System.out.println("Product Price: $" + product.getProductPrice());
                         System.out.println("Product Quantity: " + product.getProductQuantity());
-                        System.out.println("Seller Name: " + loggedInUsername);
-                        System.out.println("Seller Email: " + loggedInEmail);
+                        Seller seller = product.getSeller();
+                        if (seller != null) {
+                            System.out.println("Seller Name: " + seller.getUsername());
+                            System.out.println("Seller Email: " + seller.getEmail());
+                        }
                         System.out.println("------------------------------------");
                     }
                 }
@@ -291,12 +294,13 @@ public class userMenuOptionsImplementation {
                     // Display all products
                     System.out.println("\nProduct List:");
                     for (Product product : products) {
+                        Seller seller = product.getSeller(); // Get the seller from the Product object
                         System.out.println("\nProduct ID: " + product.getProductId() +
-                                           ", Name: " + product.getProductName() +
-                                           ", Price: " + product.getProductPrice() +
-                                           ", Quantity: " + product.getProductQuantity() +
-                                           ", Seller: " + loggedInUsername +
-                                           ", Email: " + loggedInEmail);
+                                        ", Name: " + product.getProductName() +
+                                        ", Price: " + product.getProductPrice() +
+                                        ", Quantity: " + product.getProductQuantity() +
+                                        ", Seller: " + (seller != null ? seller.getUsername() : "Unknown") +
+                                        ", Email: " + (seller != null ? seller.getEmail() : "Unknown"));
                     }
                 }
                 break;
@@ -304,7 +308,7 @@ public class userMenuOptionsImplementation {
             case 2:
                 System.out.println("\nEnter product name you want to look up:");
                 String productName = scanner.nextLine();
-                
+
                 List<Product> searchResults = productService.viewProductsByName(productName);
 
                 if (searchResults.isEmpty()) {
@@ -313,12 +317,13 @@ public class userMenuOptionsImplementation {
                     // Display the matching products
                     System.out.println("\nSearch Results for '" + productName + "':");
                     for (Product product : searchResults) {
+                        Seller seller = product.getSeller(); // Get the Seller object from the Product
                         System.out.println("Product ID: " + product.getProductId() +
-                                           ", Name: " + product.getProductName() +
-                                           ", Price: " + product.getProductPrice() +
-                                           ", Quantity: " + product.getProductQuantity() +
-                                           ", Seller: " + loggedInUsername +
-                                           ", Email: " + loggedInEmail);
+                                        ", Name: " + product.getProductName() +
+                                        ", Price: " + product.getProductPrice() +
+                                        ", Quantity: " + product.getProductQuantity() +
+                                        ", Seller: " + (seller != null ? seller.getUsername() : "Unknown") +
+                                        ", Email: " + (seller != null ? seller.getEmail() : "Unknown"));
                     }
                 }
                 break;
