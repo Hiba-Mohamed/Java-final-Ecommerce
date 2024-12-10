@@ -98,11 +98,11 @@ public class UserDAO{
         }
     }
 
-    public void addUser(User user) throws SQLException {
-        String sql = "INSERT INTO users (username, email, password, role_id) VALUES (?, ?, ?, ?)";
+   public void addUser(User user) throws SQLException {
+    String sql = "INSERT INTO users (username, email, password, role_id) VALUES (?, ?, ?, ?)";
 
         try (Connection connection = connectToDataBase();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             // Set parameters for the prepared statement
             pstmt.setString(1, user.getUsername());
@@ -114,19 +114,39 @@ public class UserDAO{
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("----------------------------");
-                System.out.println("| User added successfully! |");
-                System.out.println("----------------------------");
-
+                System.out.println("\nRegistration successful. Welcome, " + user.getUsername());
             } else {
-                System.out.println("--------------------------");
-                System.out.println("| User insertion failed. |");
-                System.out.println("--------------------------");
-
+                System.out.println("\nAn error occurred during registration.");
             }
         } catch (SQLException e) {
-            System.out.println("Error while adding user: " + e.getMessage());
+            // Check if the error is a unique constraint violation (for username or email)
+            if (e.getMessage().contains("duplicate key value violates unique constraint")) {
+                System.out.println("\nThe username or email is already in use. Please try with a different one.");
+            } else {
+                // For other types of SQL errors, print the generic error message
+                System.out.println("Error while adding user: " + e.getMessage());
+            }
         }
+    }
+
+    public boolean doesUserExist(String username, String email) {
+    String sql = "SELECT COUNT(*) FROM users WHERE username = ? OR email = ?";
+    
+        try (Connection connection = connectToDataBase();
+            PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            
+            pstmt.setString(1, username);
+            pstmt.setString(2, email);
+            
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0;  // If count is greater than 0, it means the user exists.
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking if user exists: " + e.getMessage());
+        }
+        return false;
     }
 
     public void removeUser(String username) throws SQLException {
