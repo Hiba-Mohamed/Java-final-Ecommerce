@@ -45,11 +45,9 @@ public class UserService {
                 if (BCrypt.checkpw(password, hashedPassword)) {
                     return new String[] { userId, String.valueOf(roleId), email };  // Return user_id, role_id, and email
                 } else {
-                    System.out.println("Invalid username or password.");
                     return new String[] { "null", "null", "null" };  // Indicate login failure
                 }
             } else {
-                System.out.println("Invalid username or password.");
                 return new String[] { "null", "null", "null" };  // Username not found
             }
         } catch (SQLException e) {
